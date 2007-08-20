@@ -1,0 +1,1151 @@
+﻿msgid ""
+msgstr ""
+"Project-Id-Version: wxQuickRun\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-09-27 13:32+0530\n"
+"Last-Translator: Priyank Bolia <soft@priyank.in>\n"
+"Language-Team: Priyank Bolia <soft@priyank.in>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: India\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: wxT;_T\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: C:\\Documents and Settings\\pbolia\\My Documents\\Visual Studio Projects\\wxQuickRun\\wxQuickRun\n"
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AboutDialog.cpp:52
+msgid "About"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AboutDialog.cpp:57
+#, c-format
+msgid "wxQuickRun Ver %s"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AboutDialog.cpp:62
+msgid "Copyright (c) 2006 Priyank Bolia."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AboutDialog.cpp:74
+msgid "Ok"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.cpp:64
+msgid "Contact"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.cpp:82
+msgid "Please provide a full name."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.cpp:82
+#: wxQuickRun/AddContactDialog.cpp:87
+#: wxQuickRun/AddContactDialog.cpp:174
+#: wxQuickRun/AddContactDialog.cpp:190
+#: wxQuickRun/AddKeywordDialog.cpp:147
+#: wxQuickRun/AddKeywordDialog.cpp:153
+#: wxQuickRun/AddKeywordDialog.cpp:174
+#: wxQuickRun/AddTaskDialog.cpp:266
+#: wxQuickRun/CategoriesDlg.cpp:91
+#: wxQuickRun/CategoriesDlg.cpp:111
+#: wxQuickRun/CategoriesDlg.cpp:137
+#: wxQuickRun/ClipBoardManager.cpp:60
+#: wxQuickRun/ClipBoardManager.cpp:69
+#: wxQuickRun/ClipBoardManager.cpp:84
+#: wxQuickRun/CommandTextCtrl.cpp:472
+#: wxQuickRun/CommandTextCtrl.cpp:509
+#: wxQuickRun/CommandTextCtrl.cpp:521
+#: wxQuickRun/OptionsPanel.cpp:331
+#: wxQuickRun/OptionsPanel.cpp:340
+#: wxQuickRun/OptionsPanel.cpp:341
+#: wxQuickRun/OptionsPanel.cpp:443
+#: wxQuickRun/OptionsPanel.cpp:449
+#: wxQuickRun/OptionsPanel.cpp:458
+#: wxQuickRun/OptionsPanel.cpp:469
+#: wxQuickRun/QuickRunFrame.cpp:220
+#: wxQuickRun/TasksPanel.cpp:139
+#: wxQuickRun/TasksPanel.cpp:151
+#: wxQuickRun/wxQuickRun.cpp:75
+#: wxQuickRun/AboutDialog.h:52
+#: wxQuickRun/AddContactDialog.h:43
+#: wxQuickRun/AddKeywordDialog.h:50
+#: wxQuickRun/AddTaskDialog.h:52
+#: wxQuickRun/CategoriesDlg.h:42
+#: wxQuickRun/FullNameDialog.h:54
+#: wxQuickRun/ReminderDialog.h:37
+#: wxQuickRun/SetupDialog.h:37
+msgid "wxQuickRun"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.cpp:87
+msgid "Please provide a nick name."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.cpp:174
+#: wxQuickRun/AddContactDialog.cpp:190
+msgid "The nick name has been already assigned. Please choose a different nick name."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:78
+msgid "Add keyword:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:80
+msgid "Edit keyword:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:85
+msgid "Shortcut &Keyword:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:88
+msgid "Executable &File:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:92
+msgid "Command &Parameters:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:95
+msgid "&Startup Path:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:98
+msgid "&Notes:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:147
+msgid "Please enter a short keyword for the command to be executed."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:153
+msgid "Please enter the full path of the executable file."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:174
+msgid "The keyword has been already assigned. Please choose a different keyword."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:198
+msgid "Choose an executable file"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.cpp:198
+msgid "Executable files (*.exe)|*.exe;|All files (*.*)|*.*"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:95
+msgid "Edit task:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:97
+msgid "Add task:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:102
+msgid "&Subject:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:105
+#: wxQuickRun/TasksPanel.cpp:88
+msgid "&Category:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:133
+#: wxQuickRun/AddTaskDialog.cpp:139
+#: wxQuickRun/AddTaskDialog.cpp:517
+msgid "Not Started"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:134
+#: wxQuickRun/AddTaskDialog.cpp:520
+msgid "In Progress"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:135
+#: wxQuickRun/AddTaskDialog.cpp:523
+msgid "Completed"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:136
+#: wxQuickRun/AddTaskDialog.cpp:526
+msgid "Waiting on someone else"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:137
+#: wxQuickRun/AddTaskDialog.cpp:529
+msgid "Deferred"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:138
+msgid "Stat&us:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:141
+msgid "Perce&nt:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:145
+#: wxQuickRun/AddTaskDialog.cpp:544
+msgid "Blocker"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:146
+#: wxQuickRun/AddTaskDialog.cpp:547
+msgid "Critical"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:147
+#: wxQuickRun/AddTaskDialog.cpp:151
+#: wxQuickRun/AddTaskDialog.cpp:550
+msgid "Major"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:148
+#: wxQuickRun/AddTaskDialog.cpp:553
+msgid "Minor"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:149
+#: wxQuickRun/AddTaskDialog.cpp:556
+msgid "Trivial"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:150
+msgid "&Priority:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:153
+msgid "Reminder &Message"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:178
+#: wxQuickRun/AddTaskDialog.cpp:185
+#: wxQuickRun/AddTaskDialog.cpp:209
+msgid "AM"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:179
+#: wxQuickRun/AddTaskDialog.cpp:197
+#: wxQuickRun/AddTaskDialog.cpp:489
+#: wxQuickRun/AddTaskDialog.cpp:568
+#: wxQuickRun/AddTaskDialog.cpp:578
+#: wxQuickRun/AddTaskDialog.cpp:588
+msgid "PM"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:181
+msgid "Start &Time:  "
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:193
+msgid "&End Time:    "
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:205
+msgid "&Reminder:   "
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:304
+#: wxQuickRun/AddTaskDialog.cpp:317
+#: wxQuickRun/AddTaskDialog.cpp:329
+#: wxQuickRun/CalendarDialog.h:45
+msgid "Calendar"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:456
+msgid "January"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:458
+msgid "February"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:460
+msgid "March"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:462
+msgid "April"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:464
+msgid "May"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:466
+msgid "June"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:468
+msgid "July"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:470
+msgid "August"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:472
+msgid "September"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:474
+msgid "October"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:476
+msgid "November"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.cpp:478
+msgid "December"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:67
+msgid "&Task Categories:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:72
+#: wxQuickRun/ContactsPanel.cpp:87
+#: wxQuickRun/KeywordsListPanel.cpp:78
+#: wxQuickRun/NotesPanel.cpp:74
+#: wxQuickRun/TasksPanel.cpp:99
+msgid "&Add"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:73
+msgid "&Remove"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:91
+msgid "Please enter a unique category name:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:111
+msgid ""
+"The category with the particular name already exists.\n"
+"Please choose a different and unique name."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.cpp:137
+msgid ""
+"This will remove the category and all the tasks associated with it.\n"
+"Do you want to continue?."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ClipBoardManager.cpp:60
+msgid "The requested clipboard data cannot be set."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ClipBoardManager.cpp:69
+msgid "The requested clipboard data is not present."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ClipBoardManager.cpp:84
+msgid "The requested clipboard is not present."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:214
+#: wxQuickRun/CommandTextCtrl.cpp:217
+msgid "m:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:214
+#: wxQuickRun/CommandTextCtrl.cpp:219
+msgid "M:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:353
+msgid "&Move using keyboard"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:354
+msgid "Add &Keyword..."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:355
+msgid "A&dd Task..."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:356
+msgid "Add &Contact..."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:357
+msgid "&Hide in Taskbar"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:358
+msgid "&Setup..."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:359
+msgid "Cu&t"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:360
+#: wxQuickRun/NotesPanel.cpp:76
+msgid "&Copy"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:361
+msgid "&Paste"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:362
+msgid "&About"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:363
+#: wxQuickRun/TaskBarIcon.cpp:77
+msgid "E&xit"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:364
+msgid "Key&words"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CommandTextCtrl.cpp:509
+#: wxQuickRun/CommandTextCtrl.cpp:521
+#: wxQuickRun/TasksPanel.cpp:139
+#: wxQuickRun/TasksPanel.cpp:151
+msgid "Please add a task category, before creating a task."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:74
+msgid "Name"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:75
+msgid "Phone"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:77
+#: wxQuickRun/PrimaryDetailsPanel.cpp:134
+#: wxQuickRun/PrimaryDetailsPanel.cpp:140
+msgid "Mobile"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:78
+msgid "Email"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:82
+msgid "&Search"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:88
+#: wxQuickRun/KeywordsListPanel.cpp:79
+#: wxQuickRun/TasksPanel.cpp:100
+msgid "&Edit"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:89
+#: wxQuickRun/KeywordsListPanel.cpp:80
+#: wxQuickRun/NotesPanel.cpp:75
+#: wxQuickRun/TasksPanel.cpp:101
+msgid "&Delete"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:90
+#: wxQuickRun/KeywordsListPanel.cpp:81
+#: wxQuickRun/TasksPanel.cpp:102
+msgid "&Import"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ContactsPanel.cpp:91
+#: wxQuickRun/KeywordsListPanel.cpp:82
+#: wxQuickRun/TasksPanel.cpp:103
+msgid "&Export"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:71
+msgid "Full &name:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:76
+msgid "&Title:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:79
+msgid "Mr."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:80
+msgid "Mrs."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:81
+msgid "Ms."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:82
+msgid "Miss."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:83
+msgid "Dr."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:84
+msgid "Er."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:86
+msgid "&First:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:88
+msgid "&Middle:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:90
+msgid "&Last:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:92
+msgid "&Suffix:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:95
+msgid "Sr."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:96
+msgid "Jr."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:97
+msgid "I"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:98
+msgid "II"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:99
+msgid "III"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.cpp:100
+msgid "Esq."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/KeywordsListPanel.cpp:73
+msgid "Keyword"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/KeywordsListPanel.cpp:74
+msgid "Filename"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/KeywordsListPanel.cpp:75
+msgid "Parameters"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/KeywordsListPanel.cpp:76
+#: wxQuickRun/SetupDialog.cpp:77
+msgid "Notes"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/NotesPanel.cpp:77
+msgid "&Save"
+msgstr ""
+
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/NotesPanel.cpp:260
+#, c-format
+msgid "SELECT note from notes WHERE ID = %d;"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:123
+msgid "&Hot Key:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:142
+msgid "Auto &start with system logon."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:145
+msgid "Check &Latest Version"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:146
+msgid "&Donate Online"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:150
+msgid "Options:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:159
+msgid "&Apply"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:160
+msgid "&Close"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:442
+#, c-format
+msgid ""
+"A new version %s is avialable for download.\n"
+"Do you want to upgrade it now?"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:444
+msgid "priyank.in/wxQuickRun/download.php"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:448
+msgid ""
+"You are currently using the latest version.\n"
+"Please check again, after few days."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:457
+msgid ""
+"Could not connect to the server for information.\n"
+"Please visit http://priyank.in/wxQuickRun/ for latest updates."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/OptionsPanel.cpp:469
+msgid "The selected language will be applied, upon next startup."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:74
+msgid "Add Contact:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:76
+msgid "Edit Contact:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:81
+msgid "&Full Name:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:83
+msgid " &Nickname:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:99
+msgid "&Email:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:105
+#: wxQuickRun/PrimaryDetailsPanel.cpp:108
+msgid "Work"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:106
+#: wxQuickRun/PrimaryDetailsPanel.cpp:110
+#: wxQuickRun/PrimaryDetailsPanel.cpp:133
+msgid "Home"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:107
+#: wxQuickRun/PrimaryDetailsPanel.cpp:137
+#: wxQuickRun/PrimaryDetailsPanel.cpp:170
+msgid "Other"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:126
+msgid "&Telephone:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:132
+#: wxQuickRun/PrimaryDetailsPanel.cpp:138
+msgid "Business"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:135
+msgid "Fax"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:136
+msgid "VOIP"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:156
+msgid "Instant &Messaging:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:162
+#: wxQuickRun/PrimaryDetailsPanel.cpp:171
+msgid "AIM"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:163
+msgid "Yahoo"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:164
+msgid "GTalk"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:165
+msgid "ICQ"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:166
+#: wxQuickRun/PrimaryDetailsPanel.cpp:173
+msgid "Jabber"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:167
+msgid "MSN"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:168
+msgid "SIP"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/PrimaryDetailsPanel.cpp:169
+msgid "Corporate"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:76
+msgid "Task reminder:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:78
+msgid "Start time:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:79
+msgid "Category: "
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:81
+msgid "Dismiss &All"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:82
+msgid "&Open Item"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:83
+msgid "&Dismiss"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:84
+msgid "&Click Snooze to be reminded again in:"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:86
+msgid "5 Minutes"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:87
+msgid "10 Minutes"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:88
+msgid "15 Minutes"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:89
+msgid "30 Minutes"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:90
+msgid "1 Hour"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:91
+msgid "2 Hours"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:92
+msgid "3 Hours"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:93
+msgid "5 Hours"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:94
+msgid "8 Hours"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:95
+msgid "12 Hours"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:96
+msgid "1 Day"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:97
+msgid "2 Days"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:98
+msgid "3 Days"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:99
+msgid "4 Days"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:100
+msgid "5 Days"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:101
+msgid "1 Week"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:103
+msgid "&Snooze"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:127
+#: wxQuickRun/TasksPanel.cpp:120
+msgid "Subject"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:128
+msgid "Due in"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.cpp:129
+msgid "Category"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/SetupDialog.cpp:74
+msgid "Keywords"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/SetupDialog.cpp:75
+msgid "Tasks"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/SetupDialog.cpp:76
+msgid "Contacts"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/SetupDialog.cpp:78
+msgid "Options"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TaskBarIcon.cpp:72
+#: wxQuickRun/TaskBarIcon.cpp:113
+msgid "&Hide"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TaskBarIcon.cpp:73
+msgid "&Setup"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TaskBarIcon.cpp:75
+msgid "&About..."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TaskBarIcon.cpp:117
+msgid "S&how"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TasksPanel.cpp:87
+msgid "&Manage Categories"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TasksPanel.cpp:121
+msgid "Priority"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TasksPanel.cpp:122
+msgid "Percent Completion"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TasksPanel.cpp:123
+msgid "Reminder"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/TasksPanel.cpp:124
+msgid "Due Date"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/wxQuickRun.cpp:63
+msgid "Another program instance is already running, aborting."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:118
+msgid "Unable to launch specified browser."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:173
+msgid "Unable to launch default browser."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:182
+msgid "Impossible to determine the file type for extension html"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:192
+msgid "Unable to retrieve command information"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:198
+msgid "Unable to launch browser."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/hyperLinkCtrl/src/hyperlinkctrl.cpp:265
+msgid "Copy"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/RegExValidator/src/RegExValidator.cpp:51
+#: wxQuickRun/RegExValidator/src/RegExValidator.cpp:76
+#: wxQuickRun/RegExValidator/src/RegExValidator.cpp:97
+#: wxQuickRun/RegExValidator/include/RegExValidator.h:116
+msgid "The regular expression provided has a syntax error."
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/RegExValidator/src/RegExValidator.cpp:97
+msgid "Invalid expression"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/wxDownloadFile/src/DownloadFile.cpp:37
+msgid "Can't create download thread!"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/wxDownloadFile/src/DownloadFile.cpp:43
+msgid "Can't start download thread!"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddContactDialog.h:43
+msgid "Add Contact Dialog"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddKeywordDialog.h:50
+msgid "Add Keyword Dialog"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/AddTaskDialog.h:52
+msgid "Add Task DialogBox"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/CategoriesDlg.h:42
+msgid "Categories Dialog"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/FullNameDialog.h:54
+msgid "Full name Dialog"
+msgstr ""
+
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/ReminderDialog.h:37
+msgid "Reminder Dialog Box"
+msgstr ""
+
+# C:\Documents and Settings\pbolia\My Documents\Visual Studio Projects\wxQuickRun\
+#: wxQuickRun/SetupDialog.h:37
+msgid "Setup Dialog"
+msgstr ""

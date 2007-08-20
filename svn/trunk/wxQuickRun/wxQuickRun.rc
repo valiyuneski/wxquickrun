@@ -1,0 +1,154 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\wxQuickRun.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,9,5,0
+ PRODUCTVERSION 0,9,5,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "The fast application launcher with tasks, contacts & notes management."
+            VALUE "CompanyName", "Priyank Bolia"
+            VALUE "FileDescription", "wxQuickRun"
+            VALUE "FileVersion", "0.9.5.0"
+            VALUE "InternalName", "wxQuickRun.exe"
+            VALUE "LegalCopyright", "Copyright (c) 2006-2007 Priyank Bolia.  All rights reserved."
+            VALUE "LegalTrademarks", "wxQuickRun"
+            VALUE "OriginalFilename", "wxQuickRun.exe"
+            VALUE "ProductName", "wxQuickRun"
+            VALUE "ProductVersion", "0.9.5.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+AAAAAAAAAA              ICON                    "res\\wxQuickRun.ico"
+IDI_ICON_APPICON        ICON                    "res\\wxQuickRun.ico"
+IDI_ICON_CALENDAR       ICON                    "res\\calendar.ico"
+IDI_ICON_CLOCK          ICON                    "res\\clock.ico"
+IDI_ICON_PRI_BLOCKER    ICON                    "res\\priority_blocker.ico"
+IDI_ICON_PRI_CRITICAL   ICON                    "res\\priority_critical.ico"
+IDI_ICON_PRI_MAJOR      ICON                    "res\\priority_major.ico"
+IDI_ICON_PRI_MINOR      ICON                    "res\\priority_minor.ico"
+IDI_ICON_PRI_TRIVIAL    ICON                    "res\\priority_trivial.ico"
+IDI_ICON_SPELL_CHECK    ICON                    "res\\spellcheck.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_NOTE         BITMAP                  "res\\Note.bmp"
+IDB_BITMAP_PIN_OPEN     BITMAP                  "res\\PinOpen.bmp"
+IDB_BITMAP_PIN_CLOSE    BITMAP                  "res\\PinClose.bmp"
+IDB_BITMAP_PIN_HOVER    BITMAP                  "res\\PinHoover.bmp"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\wxQuickRun.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
