@@ -55,6 +55,9 @@
 
 #define PATH_MAX 256
 
+typedef  bool (CCommandTextCtrl::*CommandHandlers)(wxString);
+#define CALL_COMMAND_HANDLER(object, ptrToMember)  ((object).*(ptrToMember))
+
 CCommandTextCtrl* CCommandTextCtrl::m_pCommandTextCtrl = NULL;
 
 BEGIN_EVENT_TABLE(CCommandTextCtrl, wxAutoTextCtrl)
@@ -319,108 +322,20 @@ void CCommandTextCtrl::ExecuteCommand(wxString strExecCommand)
 		}
 		if(bExecuted == false)
 		{
-			// launch the file with default application
-			wxString runCmd;
-			if(wxFileName::FileExists(strExecCommand))
+			// This is like chain of responsibility design pattern.
+			CommandHandlers handlers[] = {
+				&CCommandTextCtrl::OnFilesAndFolderHandler, 
+				&CCommandTextCtrl::OnHttpURLHandler,
+				&CCommandTextCtrl::OnSendMailHandler,
+				&CCommandTextCtrl::OnContactsHandler,
+				&CCommandTextCtrl::OnMathematicalEvaluatorHandler,
+				&CCommandTextCtrl::OnWindowsExecutionHandler
+			};
+			int count = sizeof(handlers)/sizeof(void*);
+			for (int index=0; index < count; index++)
 			{
-				wxString strCMD = strExecCommand;
-				wxString strExt = wxFileName(strCMD).GetExt();
-				wxMimeTypesManager mgr;
-				wxFileType* ft = mgr.GetFileTypeFromExtension(strExt);
-				runCmd = ft->GetOpenCommand(strExecCommand);
-				wxDELETE( ft );
-			}
-			if ( runCmd != wxEmptyString )
-			{
-				if(wxExecute( runCmd ) >= 0)
-					bExecuted = true;
-			}
-			else if(strExecCommand.Find(wxT("http://"))==0 || strExecCommand.Find(wxT("www."))==0)
-			{
-				wxLaunchDefaultBrowser(strExecCommand);
-			}
-			else if(wxDir::Exists(strExecCommand))
-			{
-#ifdef __WXMSW__
-				wxString strCmd = wxT("explorer ") + strExecCommand;
-				if(wxExecute(strCmd) >= 0)
-					bExecuted = true;
-#endif
-			}
-			else if((strExecCommand.Find(wxT("m:"))==0 && strExecCommand.Find(wxT("m:\\"))!=0) || (strExecCommand.Find(wxT("M:"))==0 && strExecCommand.Find(wxT("M:\\"))!=0))
-			{
-				wxString strNickName = strExecCommand;
-				strNickName.Replace(wxT("m:"), wxEmptyString);
-				if(strNickName == strExecCommand)
-					strNickName.Replace(wxT("M:"), wxEmptyString);
-				strNickName.Trim(false);
-				strNickName.Trim(true);
-				wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-				wxSQLiteDB->Open(DATABASE_FILE);
-				if(wxSQLiteDB->TableExists(wxT("users")))
-				{
-					wxString sqlCmd = wxString::Format(wxT("SELECT emailAddress from email WHERE userID IN (SELECT ID FROM users WHERE nickName = '%s')"), strNickName.Lower());
-					wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
-					if(result.NextRow())
-					{
-						wxLogNull logNo;
-						wxString strEmail = wxT("mailto:")+result.GetString(0);
-#ifdef __WXMSW__
-						::ShellExecute(NULL, wxT("open"), strEmail, NULL, NULL, SW_NORMAL);
-#endif
-					}
-				}
-				wxSQLiteDB->Close();
-				delete wxSQLiteDB;
-				wxSQLiteDB = NULL;
-			}
-			else if((strExecCommand.Find(wxT("c:"))==0 && strExecCommand.Find(wxT("c:\\"))!=0) || (strExecCommand.Find(wxT("C:"))==0 && strExecCommand.Find(wxT("C:\\"))!=0))
-			{
-				wxString strContact = strExecCommand;
-				strContact.Replace(wxT("c:"), wxEmptyString);
-				if(strContact == strExecCommand)
-					strContact.Replace(wxT("C:"), wxEmptyString);
-				strContact.Trim(false);
-				strContact.Trim(true);
-				CAddContactDialog dlgAddContact(this, CContactsPanel::wxID_DIALOG_ADD_CONTACT);
-				wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-				wxSQLiteDB->Open(DATABASE_FILE);
-				int nID = -1;
-				if(wxSQLiteDB->TableExists(wxT("users")))
-				{
-					wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), strContact.Lower());
-					wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
-					if(result.NextRow())
-					{
-						nID = result.GetInt(0);
-					}
-				}
-				wxSQLiteDB->Close();
-				delete wxSQLiteDB;
-				wxSQLiteDB = NULL;
-				dlgAddContact.SetEditMode( nID );
-				if(dlgAddContact.ShowModal()==wxID_OK)
-				{
-				}
-			}
-			else if(bExecuted == false)
-			{
-				try
-				{
-					mu::Parser p;
-					std::string strExp(strExecCommand.mb_str());
-					p.SetExpr(strExp);
-					wxString strResult;
-					strResult << p.Eval();
-					SetValue(strResult);
-					SetInsertionPointEnd();
-				}
-				catch (mu::Parser::exception_type& WXUNUSED(e))
-				{
-					wxLogNull logNo;
-					if(wxExecute(strExecCommand) >= 0)
-						bExecuted = true;
-				}
+				if (CALL_COMMAND_HANDLER(*this, handlers[index])(strExecCommand) == true)
+					break;
 			}
 		}
 	}
@@ -790,4 +705,141 @@ void CCommandTextCtrl::SetLastUsedCommand()
 		SetValue(m_strLastCommand);
 		SetSelection(0, -1);
 	}
+}
+
+bool CCommandTextCtrl::OnMathematicalEvaluatorHandler(wxString strExp)
+{
+	try
+	{
+		mu::Parser p;
+		std::string strExp(strExp.mb_str());
+		p.SetExpr(strExp);
+		wxString strResult;
+		strResult << p.Eval();
+		SetValue(strResult);
+		SetInsertionPointEnd();
+	}
+	catch (mu::Parser::exception_type& WXUNUSED(e))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool CCommandTextCtrl::OnWindowsExecutionHandler(wxString strExecCommand)
+{
+	wxLogNull logNo;
+	if(wxExecute(strExecCommand) >= 0)
+		return true;
+	return false;
+}
+
+bool CCommandTextCtrl::OnContactsHandler(wxString strExecCommand)
+{
+	if((strExecCommand.Find(wxT("c:"))==0 && strExecCommand.Find(wxT("c:\\"))!=0) || (strExecCommand.Find(wxT("C:"))==0 && strExecCommand.Find(wxT("C:\\"))!=0))
+	{
+		wxString strContact = strExecCommand;
+		strContact.Replace(wxT("c:"), wxEmptyString);
+		if(strContact == strExecCommand)
+			strContact.Replace(wxT("C:"), wxEmptyString);
+		strContact.Trim(false);
+		strContact.Trim(true);
+		CAddContactDialog dlgAddContact(this, CContactsPanel::wxID_DIALOG_ADD_CONTACT);
+		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
+		wxSQLiteDB->Open(DATABASE_FILE);
+		int nID = -1;
+		if(wxSQLiteDB->TableExists(wxT("users")))
+		{
+			wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), strContact.Lower());
+			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			if(result.NextRow())
+			{
+				nID = result.GetInt(0);
+			}
+		}
+		wxSQLiteDB->Close();
+		delete wxSQLiteDB;
+		wxSQLiteDB = NULL;
+		dlgAddContact.SetEditMode( nID );
+		if(dlgAddContact.ShowModal()==wxID_OK)
+		{
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CCommandTextCtrl::OnSendMailHandler(wxString strExecCommand)
+{
+	bool bSendMail = false;
+	wxString strNickName = strExecCommand;
+	strNickName.Replace(wxT("m:"), wxEmptyString);
+	if(strNickName == strExecCommand)
+		strNickName.Replace(wxT("M:"), wxEmptyString);
+	strNickName.Trim(false);
+	strNickName.Trim(true);
+	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
+	wxSQLiteDB->Open(DATABASE_FILE);
+	if(wxSQLiteDB->TableExists(wxT("users")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("SELECT emailAddress from email WHERE userID IN (SELECT ID FROM users WHERE nickName = '%s')"), strNickName.Lower());
+		try
+		{
+			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			if(result.NextRow())
+			{
+				wxLogNull logNo;
+				wxString strEmail = wxT("mailto:")+result.GetString(0);
+#ifdef __WXMSW__
+				::ShellExecute(NULL, wxT("open"), strEmail, NULL, NULL, SW_NORMAL);
+#endif
+				bSendMail = true;
+			}
+		}
+		catch (...)
+		{
+		}
+	}
+	wxSQLiteDB->Close();
+	delete wxSQLiteDB;
+	wxSQLiteDB = NULL;
+	return bSendMail;
+}
+
+bool CCommandTextCtrl::OnHttpURLHandler(wxString strExecCommand)
+{
+	if(strExecCommand.Find(wxT("http://"))==0 || strExecCommand.Find(wxT("www."))==0)
+	{
+		wxLaunchDefaultBrowser(strExecCommand);
+		return true;
+	}
+	return false;
+}
+
+bool CCommandTextCtrl::OnFilesAndFolderHandler(wxString strExecCommand)
+{
+	if(wxFileName::FileExists(strExecCommand))
+	{
+		wxString runCmd;
+		wxString strCMD = strExecCommand;
+		wxString strExt = wxFileName(strCMD).GetExt();
+		wxMimeTypesManager mgr;
+		wxFileType* ft = mgr.GetFileTypeFromExtension(strExt);
+		runCmd = ft->GetOpenCommand(strExecCommand);
+		wxDELETE( ft );
+		if ( runCmd != wxEmptyString )
+		{
+			if(wxExecute( runCmd ) >= 0)
+				return true;
+		}
+	}
+	else if(wxDir::Exists(strExecCommand))
+	{
+#ifdef __WXMSW__
+		wxString strCmd = wxT("explorer ") + strExecCommand;
+		if(wxExecute(strCmd) >= 0)
+			return true;
+#endif
+	}
+	return false;
 }

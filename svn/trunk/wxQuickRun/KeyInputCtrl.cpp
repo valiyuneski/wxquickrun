@@ -343,7 +343,12 @@ int CKeyInputCtrl::GetKeyCode(wxString ch)
 		return VK_SUBTRACT;
 		break;
 	case wxT('.'):
+	case wxT('>'):
 		return VK_DECIMAL;
+		break;
+	case wxT(','):
+	case wxT('<'):
+		return VK_OEM_COMMA;
 		break;
 	case wxT(';'):
 	case wxT(':'):
@@ -381,12 +386,12 @@ int CKeyInputCtrl::GetKeyCode(wxString ch)
 
 wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 {
-	if(nKeyCode >= 33 && nKeyCode <= 126)
-	{
-		wxString strKeyCode = wxT("0");
-		strKeyCode[0] = nKeyCode;
-		return strKeyCode;
-	}
+	//if(nKeyCode >= 33 && nKeyCode <= 126)
+	//{
+	//	wxString strKeyCode = wxT("0");
+	//	strKeyCode[0] = nKeyCode;
+	//	return strKeyCode;
+	//}
 	switch(nKeyCode)
 	{
 #ifdef  __WXMSW__
@@ -567,33 +572,43 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 	case WXK_SPACE:
 		return wxT("Space");
 		break;
+	case 0x29:
 	case 0x30:
 		return wxT("0");
 		break;
+	case 0x21:
 	case 0x31:
 		return wxT("1");
 		break;
+	case 0x40:
 	case 0x32:
 		return wxT("2");
 		break;
+	case 0x23:
 	case 0x33:
 		return wxT("3");
 		break;
+	case 0x24:
 	case 0x34:
 		return wxT("4");
 		break;
+	case 0x25:
 	case 0x35:
 		return wxT("5");
 		break;
+	case 0x5E:
 	case 0x36:
 		return wxT("6");
 		break;
+	case 0x26:
 	case 0x37:
 		return wxT("7");
 		break;
+	case 0x2A:
 	case 0x38:
 		return wxT("8");
 		break;
+	case 0x28:
 	case 0x39:
 		return wxT("9");
 		break;
@@ -687,26 +702,59 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 	case VK_DECIMAL:
 		return wxT(".");
 		break;
+	case 0x3A:
+	case 0x3B:
 	case VK_OEM_1:
 		return wxT(";");
 		break;
+	case 0x2F:
+	case 0x3F:
 	case VK_OEM_2:
 		return wxT("/");
 		break;
+	case 0x60:
+	case 0x7E:
 	case VK_OEM_3:
 		return wxT("`");
 		break;
+	case 0x5B:
+	case 0x7B:
 	case VK_OEM_4:
 		return wxT("[");
 		break;
+	case 0x5C:
+	case 0x7C:
 	case VK_OEM_5:
 		return wxT("\\");
 		break;
+	case 0x5D:
+	case 0x7D:
 	case VK_OEM_6:
 		return wxT("]");
 		break;
+	case 0x22:
+	case 0x27:
 	case VK_OEM_7:
 		return wxT("'");
+		break;
+	case 0x2B:
+	case 0x3D:
+	case VK_OEM_PLUS:
+		return wxT("+");
+		break;
+	case 0x2C:
+	case 0x3C:
+	case VK_OEM_COMMA:
+		return wxT(",");
+		break;
+	case 0x2D:
+	case VK_OEM_MINUS:
+		return wxT("-");
+		break;
+	case 0x2E:
+	case 0x3E:
+	case VK_OEM_PERIOD:
+		return wxT(".");
 		break;
 #endif
 	default:

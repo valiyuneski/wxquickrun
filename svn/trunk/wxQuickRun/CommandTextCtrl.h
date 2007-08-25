@@ -77,7 +77,15 @@ private:
 	void ShowTime(void);
 	void ExecuteCommand(wxString strExecCommand);
 	bool SmartProgrammer(wxString strCommand);
+	/* This class is used by dynamic_cast, thats why added a dummy virtual function.
+	   This should have a small performance penalty, will revisit this section later. */
 	virtual void DummyFuncToGenerateVTable(void){}
+	bool OnMathematicalEvaluatorHandler(wxString strExp);
+	bool OnWindowsExecutionHandler(wxString strExecCommand);
+	bool OnContactsHandler(wxString strExecCommand);
+	bool OnSendMailHandler(wxString strExecCommand);
+	bool OnHttpURLHandler(wxString strExecCommand);
+	bool OnFilesAndFolderHandler(wxString strExecCommand);
 
 public:
 	enum

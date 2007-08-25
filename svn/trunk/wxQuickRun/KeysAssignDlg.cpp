@@ -238,7 +238,9 @@ void CKeysAssignDlg::OnInitDialog(wxInitDialogEvent &event)
 	SetSizer(pMainSizer);
 
 	m_pTextCtrlClipCopy->Disable();
+	m_pTextCtrlClipCopy->SetValue(wxT("[0-9]"));
 	m_pTextCtrlClipPaste->Disable();
+	m_pTextCtrlClipPaste->SetValue(wxT("[0-9]"));
 
 	SetAutoLayout(true);
 	Fit();
@@ -301,8 +303,8 @@ void CKeysAssignDlg::SaveKeyBindingsToDB(void)
 	SaveRowToDB(wxT("AddNote"), GetModifier(m_pComboBoxAddNote->GetValue()), m_pTextCtrlAddNote->GetKeyCode());
 	SaveRowToDB(wxT("PasteFwd"), GetModifier(m_pComboBoxPasteFwd->GetValue()), m_pTextCtrlPasteFwd->GetKeyCode());
 	SaveRowToDB(wxT("PasteBkwd"), GetModifier(m_pComboBoxPasteBkwd->GetValue()), m_pTextCtrlPasteBkwd->GetKeyCode());
-	SaveRowToDB(wxT("ClipCopy"), GetModifier(m_pComboBoxClipCopy->GetValue()), m_pTextCtrlClipCopy->GetKeyCode());
-	SaveRowToDB(wxT("ClipPaste"), GetModifier(m_pComboBoxClipPaste->GetValue()), m_pTextCtrlClipPaste->GetKeyCode());
+	SaveRowToDB(wxT("ClipCopy"), GetModifier(m_pComboBoxClipCopy->GetValue()), int(char(wxT('0'))));
+	SaveRowToDB(wxT("ClipPaste"), GetModifier(m_pComboBoxClipPaste->GetValue()), int(char(wxT('0'))));
 	SaveRowToDB(wxT("PasteInc"), GetModifier(m_pComboBoxPasteInc->GetValue()), m_pTextCtrlPasteInc->GetKeyCode());
 	SaveRowToDB(wxT("PasteDec"), GetModifier(m_pComboBoxPasteDec->GetValue()), m_pTextCtrlPasteDec->GetKeyCode());
 	SaveRowToDB(wxT("GbMenu"), GetModifier(m_pComboBoxGbMenu->GetValue()), m_pTextCtrlGbMenu->GetKeyCode());
@@ -350,13 +352,13 @@ void CKeysAssignDlg::InitControlFromDB(wxString strKey, int nModifier, int nVirt
 	}
 	else if(strKey == wxT("ClipCopy"))
 	{
+		m_pTextCtrlClipCopy->SetValue(wxT("[0-9]"));
 		m_pComboBoxClipCopy->SetValue(GetModifierAsString(nModifier));
-		m_pTextCtrlClipCopy->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("ClipPaste"))
 	{
+		m_pTextCtrlClipPaste->SetValue(wxT("[0-9]"));
 		m_pComboBoxClipPaste->SetValue(GetModifierAsString(nModifier));
-		m_pTextCtrlClipPaste->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("PasteInc"))
 	{
@@ -485,15 +487,21 @@ bool CKeysAssignDlg::CheckForDuplicateKeyBindings(void)
 	if(keysSet.insert(nKeyCode).second == false)
 		return false;
 
-	nKeyCode = m_pTextCtrlClipCopy->GetKeyCode();
-	nKeyCode = (nKeyCode*100) + GetModifier(m_pComboBoxClipCopy->GetValue()); 
-	if(keysSet.insert(nKeyCode).second == false)
-		return false;
+	for (int i=0; i<10; i++)
+	{
+		nKeyCode = i + int(char(wxT('0')));
+		nKeyCode = (nKeyCode*100) + GetModifier(m_pComboBoxClipCopy->GetValue()); 
+		if(keysSet.insert(nKeyCode).second == false)
+			return false;
+	}
 
-	nKeyCode = m_pTextCtrlClipPaste->GetKeyCode();
-	nKeyCode = (nKeyCode*100) + GetModifier(m_pComboBoxClipPaste->GetValue()); 
-	if(keysSet.insert(nKeyCode).second == false)
-		return false;
+	for (int i=0; i<10; i++)
+	{
+		nKeyCode = i + int(char(wxT('0')));
+		nKeyCode = (nKeyCode*100) + GetModifier(m_pComboBoxClipPaste->GetValue()); 
+		if(keysSet.insert(nKeyCode).second == false)
+			return false;
+	}
 
 	nKeyCode = m_pTextCtrlPasteInc->GetKeyCode();
 	nKeyCode = (nKeyCode*100) + GetModifier(m_pComboBoxPasteInc->GetValue()); 

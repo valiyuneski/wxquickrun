@@ -724,6 +724,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Boost"
+				>
+				<File
+					RelativePath=".\Boost\shared_ptr.hpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
