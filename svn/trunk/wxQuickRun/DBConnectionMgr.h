@@ -21,46 +21,42 @@
  *	See gpl.txt for more information regarding the GNU General Public License.
  *
  * 
- *	\file stdwx.h
+ *	\file DBConnectionMgr.h
  *	\brief 
  *	\author Priyank Bolia
- *  \created 22 Jun, 2006
+ *  \created 25 August, 2007
  **/
 
-#ifndef _stdwx_h_
-#define _stdwx_h_
+#pragma once
 
 // SYSTEM INCLUDES
 #include <wx/wxprec.h>
 #ifdef __BORLANDC__
-    #pragma hdrstop
+#pragma hdrstop
 #endif
 #ifndef WX_PRECOMP
-    #include "wx/wx.h"
+#include "wx/wx.h"
 #endif
 
-#ifdef __VISUALC__
-#ifdef __WXDEBUG__
-#include <crtdbg.h>
-#undef WXDEBUG_NEW
-#define WXDEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#else
-#undef WXDEBUG_NEW
-#define WXDEBUG_NEW new
-#endif
-#endif
+#include "wx/wxsqlite3.h"
+#include <boost/shared_ptr.hpp>
 
-#if defined(__VISUALC__) && __VISUALC__ >= 1400
-// Comment these lines below, if you don't want to enable WinXP Style theme.
-#if defined(__WXMSW__) && !defined(__WXWINCE__)
-#pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df'\"")
-#endif
-#endif
+typedef boost::shared_ptr<wxSQLite3Database> DBConnPtr;
+#define DATABASE_FILE wxGetApp().GetDatabaseFileName()
 
-// APPLICATION INCLUDES
-#include <wx/image.h>
-#include "DBConnectionMgr.h"
+class CDBConnectionMgr
+{
+public:
+	virtual ~CDBConnectionMgr(void);
+	static boost::shared_ptr<wxSQLite3Database> GetDBConnection();
+	static void CloseDBConnection(wxSQLite3Database *wxSQLiteDB);
 
-char* wxStringToChar(wxString input);  
+private:
+	CDBConnectionMgr(void);
+	CDBConnectionMgr(const CDBConnectionMgr &);
+	CDBConnectionMgr& operator=(const CDBConnectionMgr &);
 
-#endif
+private:
+	static wxSQLite3Database *m_pSQLiteDB;
+	static long nRefCountDBInstance;
+};

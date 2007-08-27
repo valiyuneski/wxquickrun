@@ -30,6 +30,7 @@
 #include "AddTaskDialog.h"
 #include "wxQuickRun.h"
 #include <wx/regex.h>
+#include <boost/lexical_cast.hpp>
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -147,20 +148,16 @@ void CReminderDialog::OnSnoozeButton(wxCommandEvent &event)
 	strCategory = strCategory.Right(strCategory.Length() - strCategory.Find(wxT(": ")) - 2);
 	if(strCategory != wxEmptyString && strSubject != wxEmptyString)
 	{
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("tasks")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("tasks")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminderTime = ? WHERE subject = '%s' AND category = '%s';"), strSubject, strCategory);
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Bind the variables to the SQL statement
 			stmt.BindTimestamp(1, ParseSnoozeTime(m_pComboBoxSnooze->GetValue()));
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	Close();
 }
@@ -197,7 +194,13 @@ void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
 		wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminder = 0 WHERE ID in ("));
 		for(vector<int>::const_iterator iter = m_vecTasksID.begin(); iter != m_vecTasksID.end(); ++iter)
 		{
-			sqlCmd << int(*iter) << wxT(", ");
+			try 
+			{
+				sqlCmd << boost::lexical_cast<int>(*iter) << wxT(", ");
+			}
+			catch (boost::bad_lexical_cast &)
+			{	
+			}
 		}
 		sqlCmd += wxT(" 0)");
 		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
@@ -233,19 +236,38 @@ void CReminderDialog::OnSize(wxSizeEvent &event)
 
 wxDateTime CReminderDialog::ParseSnoozeTime(wxString strTime)
 {
-	//TODO: Write  the parser function to parse something like 1 Week 3 Days 5 Minutes.
+	// Parser function to parse something like: 1 Week 3 Days 5 Minutes.
 	wxDateTime dateTime = wxDateTime::Now();
 	strTime = strTime.Trim(true);
+	int weeks = 0, days = 0, hours = 0, minutes = 0;
 	wxRegEx reExp(wxT("\\s*(\\d+)\\s*([a-zA-Z]*)\\s*"), wxRE_ADVANCED);
 	wxString strNumber;
 	wxString strText;
+	int nNumber = 0;
 	while( reExp.Matches(strTime) )
 	{
 		strNumber = reExp.GetMatch(strTime, 1);
 		strText = reExp.GetMatch(strTime, 2);
 		strTime = strTime.Remove(0, reExp.GetMatch(strTime, 0).Length());
+		strText = strText.Lower();
+		try
+		{
+			nNumber =  boost::lexical_cast<int>(strText.c_str());
+		}
+		catch (boost::bad_lexical_cast &)
+		{			
+			nNumber = 0;
+		}
+		if(strText.Find(wxT("minute")) == 0)
+			minutes = nNumber;
+		else if(strText.Find(wxT("hour")) == 0)
+			hours = nNumber;
+		else if(strText.Find(wxT("day")) == 0)
+			days = nNumber;
+		else if(strText.Find(wxT("week")) == 0)
+			weeks = nNumber;
 	}
-	return dateTime;
+	return dateTime + GetTimeSpan(weeks, days, hours, minutes);
 }
 
 void CReminderDialog::SetTaskID(int nTaskReminderID)

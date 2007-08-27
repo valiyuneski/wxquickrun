@@ -114,24 +114,20 @@ void CAddTaskDialog::OnInitDialog(wxInitDialogEvent &event)
 	m_pStaticCategory = new wxStaticText(this, wxID_STATIC_TEXT_CATEGORY, wxT("&Category:"));
 
 	wxArrayString arrayCategory;
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("categories")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("categories")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT category FROM categories"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			arrayCategory.Add(result.GetString(0));
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 
 	if(arrayCategory.Count())
 		m_pComboCategory = new wxComboBox(this, wxID_COMBOBOX_CATEGORY, arrayCategory.Item(0), wxDefaultPosition, wxDefaultSize, arrayCategory, wxCB_READONLY | wxCB_SORT);
