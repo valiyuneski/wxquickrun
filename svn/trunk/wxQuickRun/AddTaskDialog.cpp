@@ -258,6 +258,18 @@ void CAddTaskDialog::OnInitDialog(wxInitDialogEvent &event)
 
 void CAddTaskDialog::OnOK(wxCommandEvent &event)
 {
+	if(IsReminderSet() && (GetEndTime() - GetReminderTime()).IsNegative())
+	{
+		wxMessageBox(wxT("Reminder time cannot be set after the task completion time."), wxT("wxQuickRun"), wxICON_ERROR|wxOK|wxCENTER, this);
+		event.Skip(false);
+		return;
+	}
+	if((GetEndTime() - GetStartTime()).IsNegative())
+	{
+		wxMessageBox(wxT("Task estimated completion time is less than the task starting time."), wxT("wxQuickRun"), wxICON_ERROR|wxOK|wxCENTER, this);
+		event.Skip(false);
+		return;
+	}
 	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
 	wxSQLiteDB->Open(DATABASE_FILE);
 	if(!wxSQLiteDB->TableExists(wxT("tasks")))

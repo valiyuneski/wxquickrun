@@ -163,6 +163,7 @@ void CTasksPanel::OnAddTask(wxCommandEvent &event)
 	if(addTaskDlg.ShowModal() == wxID_OK)
 	{
 		FillTasksList(addTaskDlg.GetCategory());
+		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->SetReminderTimer();
 	}
 	event.Skip(false);
 }
@@ -178,6 +179,7 @@ void CTasksPanel::OnEditTask(wxCommandEvent &event)
 		if(addTaskDlg.ShowModal() == wxID_OK)
 		{
 			FillTasksList(addTaskDlg.GetCategory());
+			((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->SetReminderTimer();
 		}
 	}
 	event.Skip(false);
@@ -206,6 +208,7 @@ void CTasksPanel::OnDeleteTask(wxCommandEvent &event)
 		delete wxSQLiteDB;
 		wxSQLiteDB = NULL;
 		m_pTasksListCtrl->DeleteItem(item);
+		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->SetReminderTimer();
 	}
 	event.Skip(false);
 }

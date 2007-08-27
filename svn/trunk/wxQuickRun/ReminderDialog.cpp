@@ -29,6 +29,7 @@
 #include "ReminderDialog.h"
 #include "AddTaskDialog.h"
 #include "wxQuickRun.h"
+#include <wx/regex.h>
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -62,6 +63,7 @@ CReminderDialog::CReminderDialog(wxWindow* parent, wxWindowID id, const wxString
 
 CReminderDialog::~CReminderDialog(void)
 {
+	m_vecTasksID.clear();
 }
 
 void CReminderDialog::OnClose(wxCloseEvent &event)
@@ -71,13 +73,20 @@ void CReminderDialog::OnClose(wxCloseEvent &event)
 
 void CReminderDialog::OnInitDialog(wxInitDialogEvent &event)
 {
+	GetTaskInformation();
+
 	SetMinSize(wxSize(400, 350));
 
 	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
 	wxStaticBoxSizer* pStaticBoxSizer = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Task reminder:"));
-	m_pStaticSubject = new wxStaticText(this, wxID_STATIC_TEXT_SUBJECT, wxT("Dummy Message"));
-	m_pStaticStartTime = new wxStaticText(this, wxID_STATIC_TEXT_START_TIME, wxT("Start time:"));
-	m_pStaticCategory = new wxStaticText(this, wxID_STATIC_TEXT_CATEGORY, wxT("Category: "));
+	m_pStaticSubject = new wxStaticText(this, wxID_STATIC_TEXT_SUBJECT, m_strTaskSubject);
+	wxString strDateTime = wxT("Start time: ") + m_dtTaskStartTime.Format(wxT("%A, %d %B, %Y")) + wxT(" ") + m_dtTaskStartTime.Format(wxT("%I:%M"));
+	if(m_dtTaskStartTime.GetHour() >= 12)
+		strDateTime += wxT(" PM");
+	else
+		strDateTime += wxT(" AM");
+	m_pStaticStartTime = new wxStaticText(this, wxID_STATIC_TEXT_START_TIME, strDateTime);
+	m_pStaticCategory = new wxStaticText(this, wxID_STATIC_TEXT_CATEGORY, m_strTaskCategory);
 	m_pTasksList = new wxCheckedListCtrl(this, wxID_LISTCTRL_TASKS, wxDefaultPosition, wxDefaultSize, wxLC_HRULES | wxLC_VRULES | wxLC_REPORT | wxLC_SINGLE_SEL);
 	m_pButtonDismissAll = new wxButton(this, wxID_BUTTON_DISMISS_ALL, wxT("Dismiss &All"));
 	m_pButtonOpenItem = new wxButton(this, wxID_BUTTON_OPEN_ITEM, wxT("&Open Item"));
@@ -128,6 +137,7 @@ void CReminderDialog::OnInitDialog(wxInitDialogEvent &event)
 	m_pTasksList->InsertColumn(0, wxT("Subject"), wxLIST_FORMAT_LEFT, size.GetWidth()*0.55);
 	m_pTasksList->InsertColumn(1, wxT("Due in"), wxLIST_FORMAT_LEFT, size.GetWidth()*0.20);
 	m_pTasksList->InsertColumn(2, wxT("Category"), wxLIST_FORMAT_LEFT, size.GetWidth()*0.20);
+	FillTasksList();
 }
 
 void CReminderDialog::OnSnoozeButton(wxCommandEvent &event)
@@ -166,10 +176,8 @@ void CReminderDialog::OnDismissButton(wxCommandEvent &event)
 		wxSQLiteDB->Open(DATABASE_FILE);
 		if(wxSQLiteDB->TableExists(wxT("tasks")))
 		{
-			wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminderTime = ? WHERE subject = '%s' AND category = '%s';"), strSubject, strCategory);
+			wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminder = 0 WHERE subject = '%s' AND category = '%s';"), strSubject, strCategory);
 			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
-			// Bind the variables to the SQL statement
-			stmt.BindTimestamp(1, wxDateTime(1, wxDateTime::Jan, 1970, 0, 0, 0));
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
 		}
@@ -182,6 +190,22 @@ void CReminderDialog::OnDismissButton(wxCommandEvent &event)
 
 void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
 {
+	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
+	wxSQLiteDB->Open(DATABASE_FILE);
+	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminder = 0 WHERE ID in ("));
+		for(vector<int>::const_iterator iter = m_vecTasksID.begin(); iter != m_vecTasksID.end(); ++iter)
+		{
+			sqlCmd << int(*iter) << wxT(", ");
+		}
+		sqlCmd += wxT(" 0)");
+		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		stmt.ExecuteUpdate();
+	}
+	wxSQLiteDB->Close();
+	delete wxSQLiteDB;
+	wxSQLiteDB = NULL;
 	Close();
 }
 
@@ -212,5 +236,86 @@ wxDateTime CReminderDialog::ParseSnoozeTime(wxString strTime)
 	//TODO: Write  the parser function to parse something like 1 Week 3 Days 5 Minutes.
 	wxDateTime dateTime = wxDateTime::Now();
 	strTime = strTime.Trim(true);
+	wxRegEx reExp(wxT("\\s*(\\d+)\\s*([a-zA-Z]*)\\s*"), wxRE_ADVANCED);
+	wxString strNumber;
+	wxString strText;
+	while( reExp.Matches(strTime) )
+	{
+		strNumber = reExp.GetMatch(strTime, 1);
+		strText = reExp.GetMatch(strTime, 2);
+		strTime = strTime.Remove(0, reExp.GetMatch(strTime, 0).Length());
+	}
 	return dateTime;
+}
+
+void CReminderDialog::SetTaskID(int nTaskReminderID)
+{
+	m_nTaskReminderID = nTaskReminderID;
+}
+
+int CReminderDialog::GetTaskID(void)
+{
+	return m_nTaskReminderID;
+}
+
+void CReminderDialog::GetTaskInformation()
+{
+	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
+	wxSQLiteDB->Open(DATABASE_FILE);
+	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("SELECT subject, category, startTime FROM tasks WHERE ID = %d"), m_nTaskReminderID);
+		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		if(result.NextRow())
+		{
+			m_strTaskSubject = result.GetString(0);
+			m_strTaskCategory = wxT("Category: ") + result.GetString(1);
+			m_dtTaskStartTime = result.GetDateTime(2);
+		}
+	}
+	wxSQLiteDB->Close();
+	delete wxSQLiteDB;
+	wxSQLiteDB = NULL;
+}
+
+void CReminderDialog::FillTasksList()
+{
+	m_pTasksList->DeleteAllItems();
+	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
+	wxSQLiteDB->Open(DATABASE_FILE);
+	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("SELECT ID, subject, category, reminderTime FROM tasks WHERE reminderTime > ? LIMIT 3"));
+		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		// Bind the variables to the SQL statement
+		stmt.BindTimestamp(1, wxDateTime::Now());
+		wxSQLite3ResultSet result = stmt.ExecuteQuery();
+		int nIndex = 0;
+		m_vecTasksID.clear();
+		m_vecTasksID.reserve(3);
+		while(result.NextRow())
+		{
+			m_vecTasksID.push_back(result.GetInt(1));
+			wxString strDateTime = (result.GetDateTime(3) - wxDateTime::Now()).Format();
+			m_pTasksList->InsertItem(nIndex, result.GetString(1));
+			m_pTasksList->SetItem(nIndex, 1, strDateTime);
+			m_pTasksList->SetItem(nIndex, 2, result.GetString(2));
+			nIndex++;
+		}
+	}
+	wxSQLiteDB->Close();
+	delete wxSQLiteDB;
+	wxSQLiteDB = NULL;
+}
+
+wxTimeSpan CReminderDialog::GetTimeSpan(int weeks, int days, int hours, int minutes)
+{
+	if(weeks > 0 && days > 0)
+		hours += (days*24) + (weeks*24*7);
+	else if(weeks > 0)
+		hours += (weeks*24*7);
+	else if(days > 0)
+		hours += (days*24);
+	wxTimeSpan timeSpan(hours, minutes);
+	return timeSpan;
 }

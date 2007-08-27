@@ -101,6 +101,7 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 , m_nHotKeyModifier(wxMOD_CONTROL)
 , m_bVirtualClipboard(false)
 , m_pReminderTimer(NULL)
+, m_nTaskReminderID(-1)
 {
 	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
 	wxSQLiteDB->Open(DATABASE_FILE);
@@ -400,143 +401,135 @@ void CQuickRunFrame::RegisterFreshHotKey(int hotkeyID, int nKeyCode, int modifie
 	}
 }
 
-void CQuickRunFrame::OnTextCopyHotKey0(wxKeyEvent &event)
+void CQuickRunFrame::CopyTextToClipboard(int nIndex)
 {
 	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(0, CClipBoardManager::ReadFromGlobalClipboard());
+	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(nIndex, CClipBoardManager::ReadFromGlobalClipboard());
+}
+
+void CQuickRunFrame::OnTextCopyHotKey0(wxKeyEvent &event)
+{
+	CopyTextToClipboard(0);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey1(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(1, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(1);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey2(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(2, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(2);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey3(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(3, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(3);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey4(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(4, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(4);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey5(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(5, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(5);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey6(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(6, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(6);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey7(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(7, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(7);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey8(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(8, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(8);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextCopyHotKey9(wxKeyEvent &event)
 {
-	CopyTextToClipboardFromApp();
-	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(9, CClipBoardManager::ReadFromGlobalClipboard());
+	CopyTextToClipboard(9);
 	event.Skip(false);
+}
+
+void CQuickRunFrame::PasteTextToApp(int nIndex)
+{
+	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(nIndex));
+	PasteTextFromClipboardToApp();
 }
 
 void CQuickRunFrame::OnTextPasteHotKey0(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(0));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(0);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey1(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(1));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(1);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey2(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(2));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(2);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey3(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(3));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(3);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey4(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(4));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(4);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey5(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(5));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(5);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey6(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(6));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(6);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey7(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(7));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(7);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey8(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(8));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(8);
 	event.Skip(false);
 }
 
 void CQuickRunFrame::OnTextPasteHotKey9(wxKeyEvent &event)
 {
-	CClipBoardManager::WriteToGlobalClipboard(CClipBoardManager::GetInstance()->GetStringFromVirtualClipBoard(9));
-	PasteTextFromClipboardToApp();
+	PasteTextToApp(9);
 	event.Skip(false);
 }
 
@@ -955,6 +948,7 @@ void CQuickRunFrame::OnMenuSearchEngine(wxCommandEvent &event)
 void CQuickRunFrame::OnReminderTimer(wxTimerEvent &event)
 {
 	CReminderDialog remDlg(this);
+	remDlg.SetTaskID(m_nTaskReminderID);
 	if(remDlg.ShowModal()==wxID_OK)
 	{
 	}
@@ -974,17 +968,28 @@ void CQuickRunFrame::SetReminderTimer()
 		wxString sqlCmd = wxString::Format(wxT("SELECT COUNT(reminderTime) FROM tasks WHERE reminder = 1"));
 		if(wxSQLiteDB->ExecuteScalar(sqlCmd) > 0)
 		{
-			sqlCmd = wxString::Format(wxT("SELECT MIN(reminderTime), datetime('now') FROM tasks WHERE reminder = 1"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			sqlCmd = wxString::Format(wxT("SELECT ID, MIN(reminderTime) FROM tasks WHERE reminder = 1 AND reminderTime > ?"));
+			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			// Bind the variables to the SQL statement
+			stmt.BindTimestamp(1, wxDateTime::Now());
+			// Execute the SQL Query			
+			wxSQLite3ResultSet result = stmt.ExecuteQuery();
 			if(result.NextRow())
 			{
-				wxDateTime reminderTime = result.GetDateTime(0);
-				wxDateTime nowTime = result.GetDateTime(1);
-				wxTimeSpan timeSpan = reminderTime - nowTime;
-				if(m_pReminderTimer == NULL)
-					m_pReminderTimer = new wxTimer(this, wxID_TIMER_REMINDER);
-				m_pReminderTimer->Stop();
-				m_pReminderTimer->Start((int)timeSpan.GetSeconds().ToLong()*(int)1000, true);
+				wxDateTime reminderTime = result.GetDateTime(1);
+				if(reminderTime.IsValid())
+				{
+					wxDateTime nowTime = wxDateTime::Now();
+					wxTimeSpan timeSpan = reminderTime - nowTime;
+					m_nTaskReminderID = result.GetInt(0);
+					if(timeSpan.IsPositive())
+					{
+						if(m_pReminderTimer == NULL)
+							m_pReminderTimer = new wxTimer(this, wxID_TIMER_REMINDER);
+						m_pReminderTimer->Stop();
+						m_pReminderTimer->Start((int)timeSpan.GetSeconds().ToLong()*(int)1000, true);
+					}
+				}
 			}
 		}
 	}

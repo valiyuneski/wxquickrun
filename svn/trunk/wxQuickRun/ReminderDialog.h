@@ -30,12 +30,16 @@
 #include "stdwx.h"
 #include "checkedlistctrl.h"
 #include <wx/combobox.h>
+#include <vector>
+using namespace std;
 
 class CReminderDialog :	public wxDialog
 {
 public:
 	CReminderDialog(wxWindow* parent, wxWindowID id = CReminderDialog::wxID_DIALOG_REMINDER_TASK, const wxString& title = wxT("wxQuickRun"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(400, 350), long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, const wxString& name = wxT("Reminder Dialog Box"));
 	virtual ~CReminderDialog(void);
+	void SetTaskID(int nTaskReminderID);
+	int GetTaskID(void);
 
 private:
 	void OnClose(wxCloseEvent &event);
@@ -47,6 +51,9 @@ private:
 	void OnInitDialog(wxInitDialogEvent &event);
 
 	wxDateTime ParseSnoozeTime(wxString strTime);
+	void GetTaskInformation();
+	void FillTasksList();
+	wxTimeSpan GetTimeSpan(int weeks, int days, int hours, int minutes);
 
 public:
 	enum
@@ -75,6 +82,11 @@ private:
 	wxButton *m_pButtonOpenItem;
 	wxStaticText *m_pStaticSnooze;
 	wxComboBox *m_pComboBoxSnooze;
+	int m_nTaskReminderID;
+	wxString m_strTaskSubject;
+	wxString m_strTaskCategory;
+	wxDateTime m_dtTaskStartTime;
+	vector<int> m_vecTasksID;
 
 private:
 	// Any class wishing to process wxWindows events must use this macro

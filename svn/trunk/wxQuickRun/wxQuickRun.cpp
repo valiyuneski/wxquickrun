@@ -41,9 +41,6 @@
 #define new WXDEBUG_NEW
 #endif
 
-BEGIN_EVENT_TABLE(wxQuickRunApp, wxApp)
-END_EVENT_TABLE()
-
 IMPLEMENT_APP(wxQuickRunApp)
 
 wxQuickRunApp::wxQuickRunApp(void)

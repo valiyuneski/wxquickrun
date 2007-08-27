@@ -62,9 +62,6 @@ public:
 	{
 		wxID_FRAME_MAIN = wxID_HIGHEST + 1000
 	};
-
-private:
-	DECLARE_EVENT_TABLE()
 };
 
 DECLARE_APP(wxQuickRunApp);

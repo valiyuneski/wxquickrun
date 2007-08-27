@@ -103,6 +103,8 @@ private:
 	wxString SentenceCase(wxString str);
 	wxString CalculateExpression(wxString str);
 	unsigned int GetHotkeyID(wxString strKeyID);
+	void CopyTextToClipboard(int nIndex);
+	void PasteTextToApp(int nIndex);
 
 #ifdef __WXMSW__
 private:
@@ -183,6 +185,7 @@ private:
 	int m_nHotKeyModifier;
 	bool m_bVirtualClipboard;
 	wxTimer *m_pReminderTimer;
+	int m_nTaskReminderID;
 
 public:
 	static const int MAX_SEARCH_ENGINES = 25;

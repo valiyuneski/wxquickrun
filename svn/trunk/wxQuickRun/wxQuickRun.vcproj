@@ -260,6 +260,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DBConnectionMgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\diskid32.cpp"
 				>
 			</File>
@@ -478,6 +482,10 @@
 			</File>
 			<File
 				RelativePath=".\ContactsPanel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DBConnectionMgr.h"
 				>
 			</File>
 			<File
@@ -721,14 +729,6 @@
 				</File>
 				<File
 					RelativePath=".\Hunspell\include\suggestmgr.hxx"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Boost"
-				>
-				<File
-					RelativePath=".\Boost\shared_ptr.hpp"
 					>
 				</File>
 			</Filter>
