@@ -266,39 +266,31 @@ void CKeysAssignDlg::OnOK(wxCommandEvent &event)
 
 void CKeysAssignDlg::GetKeyBindingsFromDB(void)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("keybindings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("keybindings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE keybindings(key VARCHAR(32), modifier NUMERIC(3,0), virtualKey NUMERIC(2,0));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE keybindings(key VARCHAR(32), modifier NUMERIC(3,0), virtualKey NUMERIC(2,0));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("select key, modifier, virtualKey from keybindings;"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			InitControlFromDB(result.GetString(0), result.GetInt(1), result.GetInt(2));
 		}
 		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CKeysAssignDlg::SaveKeyBindingsToDB(void)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("keybindings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("keybindings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE keybindings(key VARCHAR(32), modifier NUMERIC(3,0), virtualKey NUMERIC(2,0));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE keybindings(key VARCHAR(32), modifier NUMERIC(3,0), virtualKey NUMERIC(2,0));"));
 	}
-	wxSQLiteDB->ExecuteUpdate(wxT("DELETE FROM keybindings WHERE 1=1;"));
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	dbConn->ExecuteUpdate(wxT("DELETE FROM keybindings WHERE 1=1;"));
 	SaveRowToDB(wxT("Focus"), GetModifier(m_pComboBoxFocus->GetValue()), m_pTextCtrlFocus->GetKeyCode());
 	SaveRowToDB(wxT("AddNote"), GetModifier(m_pComboBoxAddNote->GetValue()), m_pTextCtrlAddNote->GetKeyCode());
 	SaveRowToDB(wxT("PasteFwd"), GetModifier(m_pComboBoxPasteFwd->GetValue()), m_pTextCtrlPasteFwd->GetKeyCode());
@@ -319,13 +311,9 @@ void CKeysAssignDlg::SaveKeyBindingsToDB(void)
 
 void CKeysAssignDlg::SaveRowToDB(wxString strKey, int nModifier, int nVirtualCode)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	wxString sqlCmd = wxString::Format(wxT("INSERT INTO keybindings('key', 'modifier', 'virtualKey') VALUES('%s', %d, %d);"), strKey, nModifier, nVirtualCode);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	dbConn->ExecuteUpdate(sqlCmd);
 }
 
 void CKeysAssignDlg::InitControlFromDB(wxString strKey, int nModifier, int nVirtualCode)

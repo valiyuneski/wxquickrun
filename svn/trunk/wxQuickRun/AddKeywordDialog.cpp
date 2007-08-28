@@ -175,42 +175,36 @@ void CAddKeywordDialog::OnOK(wxCommandEvent& event)
 			return;
 		}
 	}
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("Commands")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table Commands(ID INTEGER PRIMARY KEY AUTOINCREMENT, keyword VARCHAR(32), executableFile VARCHAR(255), params VARCHAR(255), startUpPath VARCHAR(255), notes VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table Commands(ID INTEGER PRIMARY KEY AUTOINCREMENT, keyword VARCHAR(32), executableFile VARCHAR(255), params VARCHAR(255), startUpPath VARCHAR(255), notes VARCHAR(255));"));
 	}
 
 	int nIDOld = -1;
 	if(m_strEditKeyword != wxEmptyString)
 	{
 		wxString sqlCmd = wxString::Format(wxT("Select ID from Commands WHERE keyword = '%s'"), strKeyword);
-		nIDOld = wxSQLiteDB->ExecuteScalar(sqlCmd);
+		nIDOld = dbConn->ExecuteScalar(sqlCmd);
 		sqlCmd = wxString::Format(wxT("Delete from Commands WHERE keyword = '%s'"), strKeyword);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("select keyword from Commands WHERE keyword = '%s'"), strKeyword);
-	wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+	wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 	if(result.NextRow())
 	{
 		wxMessageBox(wxT("The keyword has been already assigned. Please choose a different keyword."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
 		m_pTextCtrlKeyword->SetFocus();
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		return;
 	}
+	result.Finalize();
 
 	if(nIDOld == -1)
 		sqlCmd = wxString::Format(wxT("Insert INTO Commands('keyword', 'executableFile', 'params', 'startUpPath', 'notes') VALUES('%s', '%s', '%s', '%s', '%s')"), strKeyword.MakeLower(), strExecFile, strParameters, strStartUpPath, strNotes);
 	else
 		sqlCmd = wxString::Format(wxT("Insert INTO Commands('ID', 'keyword', 'executableFile', 'params', 'startUpPath', 'notes') VALUES(%d, '%s', '%s', '%s', '%s', '%s')"), nIDOld, strKeyword.MakeLower(), strExecFile, strParameters, strStartUpPath, strNotes);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	dbConn->ExecuteUpdate(sqlCmd);
 	if(m_strEditKeyword == wxEmptyString)
 	{
 		CCommandTextCtrl* pTextCtrl = static_cast<CCommandTextCtrl *>(CCommandTextCtrl::GetInstance());
@@ -236,12 +230,11 @@ void CAddKeywordDialog::SetEditMode(wxString strEditKeyword)
 
 void CAddKeywordDialog::FillDialog()
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select executableFile, params, startUpPath, notes from Commands WHERE keyword='%s'"), m_strEditKeyword);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			m_pTextCtrlKeyword->SetValue(m_strEditKeyword);
@@ -251,8 +244,6 @@ void CAddKeywordDialog::FillDialog()
 			m_pTextCtrlNotes->SetValue(result.GetString(3));
 			m_pTextCtrlKeyword->Disable();
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

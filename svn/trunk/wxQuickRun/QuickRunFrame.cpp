@@ -103,18 +103,17 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 , m_pReminderTimer(NULL)
 , m_nTaskReminderID(-1)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
 		// Center the dialog when first shown
 		this->Centre();
 		int x = wxSystemSettings::GetMetric(wxSYS_SCREEN_X) - 150;
 		int y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y) - 25 - 30;
 		wxSize size(150, 25);
 #ifdef  __WXMSW__
-		HWND pWndChild = ::FindWindow(_T("Shell_TrayWnd"), NULL);
+		HWND pWndChild = ::FindWindow(wxT("Shell_TrayWnd"), NULL);
 		if(pWndChild)
 		{
 			RECT rect;
@@ -129,7 +128,7 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 		wxPoint pos;
 		wxSize size;
 		wxString sqlCmd = wxString::Format(wxT("select * from settings"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			if(result.GetString(0) == wxT("PosX"))
@@ -145,6 +144,7 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 			else if(result.GetString(0) == wxT("Modifier"))
 				m_nHotKeyModifier = wxAtoi(result.GetString(1));
 		}
+		result.Finalize();
 		SetSize(pos.x, pos.y, size.GetWidth(), size.GetHeight());
 	}
 
@@ -185,7 +185,7 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 	RegisterFreshHotKey(wxID_HOTKEY_CALCULATE, 0x37, wxMOD_CONTROL|wxMOD_ALT);
 
 	wxString sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'VirtualClipboard';"));
-	wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+	wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 	if(result.NextRow())
 	{
 		if(result.GetString(0) == wxT("true"))
@@ -217,10 +217,8 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 			m_bVirtualClipboard = true;
 		}
 	}
+	result.Finalize();
 
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	CreateGUIControls();
 	SetReminderTimer();
 }
@@ -297,11 +295,10 @@ void CQuickRunFrame::OnClose(wxCloseEvent& event)
 		wxWindow::UnregisterHotKey(wxID_HOTKEY_PASTE_9);
 	}
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
 	}
 
 	wxPoint pos = GetPosition();
@@ -309,25 +306,21 @@ void CQuickRunFrame::OnClose(wxCloseEvent& event)
 
 	wxString sqlCmd;
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'PosX'"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("Insert into settings('key', 'value') VALUES('PosX', '%d')"), pos.x);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'PosY'"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("Insert into settings('key', 'value') VALUES('PosY', '%d')"), pos.y);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'Width'"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("Insert into settings('key', 'value') VALUES('Width', '%d')"), size.GetWidth());
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'Height'"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("Insert into settings('key', 'value') VALUES('Height', '%d')"), size.GetHeight());
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	delete m_pTaskBarIcon;
 	m_pTaskBarIcon = NULL;
@@ -670,29 +663,27 @@ void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent &event)
 	wxMenu* pKeywords = new wxMenu;
 	wxMenu* pSearch = new wxMenu;
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select ID, keyword from Commands"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			pKeywords->Append(CCommandTextCtrl::wxID_MENU_POPUP_KEYWORDS+result.GetInt(0), result.GetString(1));
 		}
+		result.Finalize();
 	}
-	if(wxSQLiteDB->TableExists(wxT("searchengines")))
+	if(dbConn->TableExists(wxT("searchengines")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select ID, name from searchengines"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			pSearch->Append(wxID_MENU_POPUP_SEARCH+result.GetInt(0), result.GetString(1));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 
 	wxMenu* pCopyMenu = new wxMenu;
 	wxMenu* pPasteMenu = new wxMenu;
@@ -920,16 +911,15 @@ void CQuickRunFrame::OnMenuSearchEngine(wxCommandEvent &event)
 {
 	CopyTextToClipboardFromApp();
 	wxString strSearch = CClipBoardManager::ReadFromGlobalClipboard();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("searchengines")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT url FROM searchengines WHERE ID = %d"), event.GetId()-wxID_MENU_POPUP_SEARCH);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			wxString strURL = result.GetString(0);
@@ -938,10 +928,8 @@ void CQuickRunFrame::OnMenuSearchEngine(wxCommandEvent &event)
 			strURL.Replace(wxT("&"), wxT("&amp;"));
 			wxLaunchDefaultBrowser(strURL);
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	event.Skip(false);
 }
 
@@ -957,19 +945,18 @@ void CQuickRunFrame::OnReminderTimer(wxTimerEvent &event)
 
 void CQuickRunFrame::SetReminderTimer()
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT COUNT(reminderTime) FROM tasks WHERE reminder = 1"));
-		if(wxSQLiteDB->ExecuteScalar(sqlCmd) > 0)
+		if(dbConn->ExecuteScalar(sqlCmd) > 0)
 		{
 			sqlCmd = wxString::Format(wxT("SELECT ID, MIN(reminderTime) FROM tasks WHERE reminder = 1 AND reminderTime > ?"));
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Bind the variables to the SQL statement
 			stmt.BindTimestamp(1, wxDateTime::Now());
 			// Execute the SQL Query			
@@ -991,11 +978,9 @@ void CQuickRunFrame::SetReminderTimer()
 					}
 				}
 			}
+			result.Finalize();
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 #ifdef  __WXMSW__

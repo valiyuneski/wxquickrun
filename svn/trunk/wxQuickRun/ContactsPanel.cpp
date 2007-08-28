@@ -113,12 +113,11 @@ void CContactsPanel::CreateGUIControls()
 void CContactsPanel::FillContactsList(void)
 {
 	m_pContactsListCtrl->DeleteAllItems();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("users")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("users")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT ID, nickName from users"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		int nIndex = 0;
 		while(result.NextRow())
 		{
@@ -129,21 +128,25 @@ void CContactsPanel::FillContactsList(void)
 			wxString strIM;
 			strName = wxString::Format(wxT("%s"), result.GetString(1));
 			sqlCmd = wxString::Format(wxT("SELECT emailAddress from email WHERE userID = %d LIMIT 1"), result.GetInt(0));
-			wxSQLite3ResultSet emailResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet emailResult = dbConn->ExecuteQuery(sqlCmd);
 			if(emailResult.NextRow())
 				strEmail = emailResult.GetString(0);
+			emailResult.Finalize();
 			sqlCmd = wxString::Format(wxT("SELECT phoneNumber from telephone WHERE type = 'Mobile' AND userID = %d LIMIT 1"), result.GetInt(0));
-			wxSQLite3ResultSet mobileResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet mobileResult = dbConn->ExecuteQuery(sqlCmd);
 			if(mobileResult.NextRow())
 				strMobile = mobileResult.GetString(0);
+			mobileResult.Finalize();
 			sqlCmd = wxString::Format(wxT("SELECT phoneNumber from telephone WHERE phoneNumber <> '%s' AND userID = %d LIMIT 1"), strMobile, result.GetInt(0));
-			wxSQLite3ResultSet phoneResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet phoneResult = dbConn->ExecuteQuery(sqlCmd);
 			if(phoneResult.NextRow())
 				strPhone = phoneResult.GetString(0);
+			phoneResult.Finalize();
 			sqlCmd = wxString::Format(wxT("SELECT IMAddress from IM WHERE userID = %d LIMIT 1"), result.GetInt(0));
-			wxSQLite3ResultSet IMResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet IMResult = dbConn->ExecuteQuery(sqlCmd);
 			if(IMResult.NextRow())
 				strIM = IMResult.GetString(0);
+			IMResult.Finalize();
 			m_pContactsListCtrl->InsertItem(nIndex, strName);
 			m_pContactsListCtrl->SetItem(nIndex, 1, strPhone);
 			m_pContactsListCtrl->SetItem(nIndex, 2, strIM);
@@ -151,10 +154,8 @@ void CContactsPanel::FillContactsList(void)
 			m_pContactsListCtrl->SetItem(nIndex, 4, strEmail);
 			nIndex++;
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CContactsPanel::OnAddContact(wxCommandEvent &event)
@@ -174,21 +175,18 @@ void CContactsPanel::OnEditContact(wxCommandEvent &event)
 	if ( item != -1 )
 	{
 		CAddContactDialog dlgAddContact(this, wxID_DIALOG_ADD_CONTACT);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 		int nID = -1;
-		if(wxSQLiteDB->TableExists(wxT("users")))
+		if(dbConn->TableExists(wxT("users")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), m_pContactsListCtrl->GetItemText(item));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				nID = result.GetInt(0);
 			}
+			result.Finalize();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		dlgAddContact.SetEditMode( nID );
 		if(dlgAddContact.ShowModal()==wxID_OK)
 		{
@@ -205,36 +203,33 @@ void CContactsPanel::OnDeleteContact(wxCommandEvent &event)
 	if ( item != -1 )
 	{
 		wxString strNickName = m_pContactsListCtrl->GetItemText(item);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("users")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("users")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), strNickName);
 			int nID = 0;
 			
 			{
-				wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 				if(result.NextRow())
 				{
 					nID = result.GetInt(0);
 				}
+				result.Finalize();
 			}
 			
 			sqlCmd = wxString::Format(wxT("DELETE FROM users WHERE nickName = '%s'"), strNickName);
-			wxSQLiteDB->ExecuteUpdate(sqlCmd);
+			dbConn->ExecuteUpdate(sqlCmd);
 
 			sqlCmd = wxString::Format(wxT("DELETE FROM email WHERE userID = %d"), nID);
-			wxSQLiteDB->ExecuteUpdate(sqlCmd);
+			dbConn->ExecuteUpdate(sqlCmd);
 
 			sqlCmd = wxString::Format(wxT("DELETE FROM telephone WHERE userID = %d"), nID);
-			wxSQLiteDB->ExecuteUpdate(sqlCmd);
+			dbConn->ExecuteUpdate(sqlCmd);
 
 			sqlCmd = wxString::Format(wxT("DELETE FROM IM WHERE userID = %d"), nID);
-			wxSQLiteDB->ExecuteUpdate(sqlCmd);
+			dbConn->ExecuteUpdate(sqlCmd);
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		m_pContactsListCtrl->DeleteItem(item);
 	}
 	event.Skip(false);
@@ -264,12 +259,11 @@ void CContactsPanel::OnSearchContact(wxCommandEvent &event)
 	else
 	{
 		m_pContactsListCtrl->DeleteAllItems();
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("users")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("users")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID, nickName from users WHERE nickName LIKE '%s%%'"), m_pTextCtrlSearchContacts->GetValue());
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			int nIndex = 0;
 			while(result.NextRow())
 			{
@@ -280,21 +274,25 @@ void CContactsPanel::OnSearchContact(wxCommandEvent &event)
 				wxString strIM;
 				strName = wxString::Format(wxT("%s"), result.GetString(1));
 				sqlCmd = wxString::Format(wxT("SELECT emailAddress from email WHERE userID = %d LIMIT 1"), result.GetInt(0));
-				wxSQLite3ResultSet emailResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet emailResult = dbConn->ExecuteQuery(sqlCmd);
 				if(emailResult.NextRow())
 					strEmail = emailResult.GetString(0);
+				emailResult.Finalize();
 				sqlCmd = wxString::Format(wxT("SELECT phoneNumber from telephone WHERE type = 'Mobile' AND userID = %d LIMIT 1"), result.GetInt(0));
-				wxSQLite3ResultSet mobileResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet mobileResult = dbConn->ExecuteQuery(sqlCmd);
 				if(mobileResult.NextRow())
 					strMobile = mobileResult.GetString(0);
+				mobileResult.Finalize();
 				sqlCmd = wxString::Format(wxT("SELECT phoneNumber from telephone WHERE phoneNumber <> '%s' AND userID = %d LIMIT 1"), strMobile, result.GetInt(0));
-				wxSQLite3ResultSet phoneResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet phoneResult = dbConn->ExecuteQuery(sqlCmd);
 				if(phoneResult.NextRow())
 					strPhone = phoneResult.GetString(0);
+				phoneResult.Finalize();
 				sqlCmd = wxString::Format(wxT("SELECT IMAddress from IM WHERE userID = %d LIMIT 1"), result.GetInt(0));
-				wxSQLite3ResultSet IMResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet IMResult = dbConn->ExecuteQuery(sqlCmd);
 				if(IMResult.NextRow())
 					strIM = IMResult.GetString(0);
+				IMResult.Finalize();
 				m_pContactsListCtrl->InsertItem(nIndex, strName);
 				m_pContactsListCtrl->SetItem(nIndex, 1, strPhone);
 				m_pContactsListCtrl->SetItem(nIndex, 2, strIM);
@@ -302,10 +300,8 @@ void CContactsPanel::OnSearchContact(wxCommandEvent &event)
 				m_pContactsListCtrl->SetItem(nIndex, 4, strEmail);
 				nIndex++;
 			}
+			result.Finalize();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	event.Skip(false);
 }

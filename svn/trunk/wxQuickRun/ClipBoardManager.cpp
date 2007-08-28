@@ -35,22 +35,19 @@ CClipBoardManager *CClipBoardManager::m_pClipBoardManager = NULL;
 CClipBoardManager::CClipBoardManager(void)
 : m_nClipBoardIndex(0)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'ClipboardIndex';"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 			SetVirtualClipBoardIndex(wxAtoi(result.GetString(0))-1);
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 CClipBoardManager::~CClipBoardManager(void)
@@ -74,23 +71,19 @@ void CClipBoardManager::SetStringToVirtualClipBoard(unsigned int nIndex, wxStrin
 	if(nIndex < MAX_CLIPBOARD_OBJECTS)
 	{
 		m_clipBoardStr[m_nClipBoardIndex][nIndex] = strText;
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(!wxSQLiteDB->TableExists(wxT("clipboard")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(!dbConn->TableExists(wxT("clipboard")))
 		{
-			wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE clipboard(ID INTEGER PRIMARY KEY AUTOINCREMENT, string TEXT);"));
+			dbConn->ExecuteUpdate(wxT("CREATE TABLE clipboard(ID INTEGER PRIMARY KEY AUTOINCREMENT, string TEXT);"));
 		}
 		wxString sqlCmd = wxString::Format(wxT("DELETE FROM clipboard WHERE ID = %d;"), (m_nClipBoardIndex*10)+nIndex);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 		sqlCmd = wxString::Format(wxT("Insert INTO clipboard('ID', 'string') VALUES(%d, ?)"), (m_nClipBoardIndex*10)+nIndex);
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		// Bind the variables to the SQL statement
 		stmt.Bind(1, strText);
 		// Execute the SQL Query
 		stmt.ExecuteUpdate();
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	else
 	{
@@ -152,11 +145,10 @@ void CClipBoardManager::WriteToGlobalClipboard(wxString strClipboard)
 
 void CClipBoardManager::LoadClipboardStringsFromDB(void)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("clipboard")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("clipboard")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE clipboard(ID INTEGER PRIMARY KEY AUTOINCREMENT, string TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE clipboard(ID INTEGER PRIMARY KEY AUTOINCREMENT, string TEXT);"));
 	}
 	else
 	{
@@ -165,15 +157,13 @@ void CClipBoardManager::LoadClipboardStringsFromDB(void)
 			for (int j=0; j<MAX_CLIPBOARD_OBJECTS; j++)
 			{
 				wxString sqlCmd = wxString::Format(wxT("SELECT string from clipboard WHERE ID = %d;"), (i*10)+j);
-				wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 				if(result.NextRow())
 				{
 					m_clipBoardStr[i][j] = result.GetString(0);
 				}
+				result.Finalize();
 			}
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

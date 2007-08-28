@@ -110,12 +110,11 @@ void CKeywordsListPanel::FillKeywordsList()
 {
 	m_pKeywordsListCtrl->DeleteAllItems();
 	m_imageList.RemoveAll();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select keyword, executableFile, params, startUpPath, notes from Commands"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		int nIndex = 0;
 		while(result.NextRow())
 		{
@@ -155,10 +154,8 @@ void CKeywordsListPanel::FillKeywordsList()
 				LocalFree((HLOCAL)pIcons);
 			nIndex++;
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CKeywordsListPanel::OnAddKeyword(wxCommandEvent &event)
@@ -191,16 +188,12 @@ void CKeywordsListPanel::OnDeleteKeyword(wxCommandEvent &event)
 	if ( item != -1 )
 	{
 		wxString strKeyword = m_pKeywordsListCtrl->GetItemText(item);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("Commands")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("Commands")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("DELETE FROM Commands WHERE keyword = '%s'"), strKeyword);
-			wxSQLiteDB->ExecuteUpdate(sqlCmd);
+			dbConn->ExecuteUpdate(sqlCmd);
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		m_pKeywordsListCtrl->DeleteItem(item);
 	}
 	event.Skip(false);

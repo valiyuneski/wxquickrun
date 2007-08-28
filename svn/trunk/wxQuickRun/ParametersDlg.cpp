@@ -99,22 +99,22 @@ void CParametersDlg::SetCommandID(int nCommandID)
 
 void CParametersDlg::AddSavedParamsToComboBox(void)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("parameters")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("parameters")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE parameters(ID INTEGER PRIMARY KEY AUTOINCREMENT, commandID INTEGER, param VARCHAR(255), lastused TIMESTAMP);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE parameters(ID INTEGER PRIMARY KEY AUTOINCREMENT, commandID INTEGER, param VARCHAR(255), lastused TIMESTAMP);"));
 	}
 	else
 	{
 		try
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT param FROM parameters WHERE commandID = %d ORDER BY lastused DESC"), m_nCommandID);
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			while(result.NextRow())
 			{
 				m_pComboBoxParam->Append(result.GetString(0));
 			}
+			result.Finalize();
 			if(m_pComboBoxParam->GetCount() > 0)
 				m_pComboBoxParam->SetSelection(0);
 		}
@@ -123,28 +123,24 @@ void CParametersDlg::AddSavedParamsToComboBox(void)
 			wxMessageBox(e->GetMessage());
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CParametersDlg::SaveParamToDatabase(wxString strParam)
 {
 	if(strParam == wxEmptyString)
 		return;
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("parameters")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("parameters")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE parameters(ID INTEGER PRIMARY KEY AUTOINCREMENT, commandID INTEGER, param VARCHAR(255), lastused TIMESTAMP);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE parameters(ID INTEGER PRIMARY KEY AUTOINCREMENT, commandID INTEGER, param VARCHAR(255), lastused TIMESTAMP);"));
 	}
 	wxString strEscapedParam(strParam);
 	strEscapedParam.Replace(wxT("'"), wxT("''"));
 	wxString sqlCmd = wxString::Format(wxT("select COUNT(ID) from parameters WHERE commandID = %d AND param = '%s'"), m_nCommandID, strEscapedParam);
-	if(wxSQLiteDB->ExecuteScalar(sqlCmd) == 0)
+	if(dbConn->ExecuteScalar(sqlCmd) == 0)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO parameters('commandID', 'param', 'lastused') VALUES (%d, ?, ?)"), m_nCommandID);
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		stmt.Bind(1, strParam);
 		stmt.BindTimestamp(2, wxDateTime::Now());
 		stmt.ExecuteUpdate();
@@ -152,37 +148,33 @@ void CParametersDlg::SaveParamToDatabase(wxString strParam)
 	else
 	{
 		sqlCmd = wxString::Format(wxT("Update parameters SET lastused = ? WHERE commandID = %d AND param = ?"), m_nCommandID);
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		stmt.BindTimestamp(1, wxDateTime::Now());
 		stmt.Bind(2, strParam);
 		stmt.ExecuteUpdate();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	RemoveOldestParameter();
 }
 
 void CParametersDlg::RemoveOldestParameter(void)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("parameters")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("parameters")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select COUNT(ID) from parameters WHERE commandID = %d"), m_nCommandID);
-		if(wxSQLiteDB->ExecuteScalar(sqlCmd)>20)
+		if(dbConn->ExecuteScalar(sqlCmd)>20)
 		{
 			sqlCmd = wxString::Format(wxT("select ID from parameters WHERE commandID = %d ORDER BY lastused LIMIT 1"), m_nCommandID);
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				sqlCmd = wxString::Format(wxT("DELETE FROM parameters WHERE ID = %d"), result.GetInt(0));
 				result.Finalize();
-				wxSQLiteDB->ExecuteQuery(sqlCmd);
+				dbConn->ExecuteQuery(sqlCmd);
 			}
+			else
+				result.Finalize();
+
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

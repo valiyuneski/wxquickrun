@@ -96,34 +96,28 @@ void CCategoriesDlg::OnAddButton(wxCommandEvent& event)
 		wxString strCategory = categoryTextEntryDlg.GetValue();
 		if(strCategory != wxEmptyString)
 		{
-			wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-			wxSQLiteDB->Open(DATABASE_FILE);
-			if(!wxSQLiteDB->TableExists(wxT("categories")))
+			DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+			if(!dbConn->TableExists(wxT("categories")))
 			{
-				wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+				dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 			}
 
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM categories WHERE category = '%s'"), strCategory);
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
-				wxSQLiteDB->Close();
-				delete wxSQLiteDB;
-				wxSQLiteDB = NULL;
+				result.Finalize();
 				wxMessageBox(wxT("The category with the particular name already exists.\nPlease choose a different and unique name."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR );
 				return;
 			}
+			result.Finalize();
 
 			sqlCmd = wxString::Format(wxT("Insert INTO categories('category') VALUES(?)"));
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Bind the variables to the SQL statement
 			stmt.Bind(1, strCategory);
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
-
-			wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 
 			FillTaskCategories();
 		}
@@ -138,31 +132,27 @@ void CCategoriesDlg::OnRemoveButton(wxCommandEvent& event)
 	{
 		if(wxMessageBox(wxT("This will remove the category and all the tasks associated with it.\nDo you want to continue?."), wxT("wxQuickRun"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) != wxYES)
 			return;
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
+
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 		
-		if(!wxSQLiteDB->TableExists(wxT("categories")))
+		if(!dbConn->TableExists(wxT("categories")))
 		{
-			wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+			dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 		}
 		else
 		{
 			wxString sqlCmd = wxString::Format(wxT("DELETE FROM categories WHERE category = '%s'"), strRemoveCategory);
-			wxSQLiteDB->ExecuteQuery(sqlCmd);
+			dbConn->ExecuteQuery(sqlCmd);
 		}
-		if(!wxSQLiteDB->TableExists(wxT("tasks")))
+		if(!dbConn->TableExists(wxT("tasks")))
 		{
-			wxSQLiteDB->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+			dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
 		}
 		else
 		{
 			wxString sqlCmd = wxString::Format(wxT("DELETE FROM tasks WHERE category = '%s'"), strRemoveCategory);
-			wxSQLiteDB->ExecuteQuery(sqlCmd);
+			dbConn->ExecuteQuery(sqlCmd);
 		}
-
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 
 		FillTaskCategories();
 	}
@@ -172,22 +162,19 @@ void CCategoriesDlg::OnRemoveButton(wxCommandEvent& event)
 void CCategoriesDlg::FillTaskCategories(void)
 {
 	m_pListBoxCategories->Clear();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("categories")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("categories")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT category FROM categories"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			m_pListBoxCategories->Append(result.GetString(0));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

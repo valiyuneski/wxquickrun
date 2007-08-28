@@ -169,27 +169,22 @@ void CReminderDialog::OnDismissButton(wxCommandEvent &event)
 	strCategory = strCategory.Right(strCategory.Length() - strCategory.Find(wxT(": ")) - 2);
 	if(strCategory != wxEmptyString && strSubject != wxEmptyString)
 	{
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("tasks")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("tasks")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminder = 0 WHERE subject = '%s' AND category = '%s';"), strSubject, strCategory);
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	Close();
 }
 
 void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("tasks")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("UPDATE tasks SET reminder = 0 WHERE ID in ("));
 		for(vector<int>::const_iterator iter = m_vecTasksID.begin(); iter != m_vecTasksID.end(); ++iter)
@@ -203,12 +198,9 @@ void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
 			}
 		}
 		sqlCmd += wxT(" 0)");
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		stmt.ExecuteUpdate();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	Close();
 }
 
@@ -282,33 +274,29 @@ int CReminderDialog::GetTaskID(void)
 
 void CReminderDialog::GetTaskInformation()
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("tasks")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT subject, category, startTime FROM tasks WHERE ID = %d"), m_nTaskReminderID);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			m_strTaskSubject = result.GetString(0);
 			m_strTaskCategory = wxT("Category: ") + result.GetString(1);
 			m_dtTaskStartTime = result.GetDateTime(2);
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CReminderDialog::FillTasksList()
 {
 	m_pTasksList->DeleteAllItems();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("tasks")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT ID, subject, category, reminderTime FROM tasks WHERE reminderTime > ? LIMIT 3"));
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		// Bind the variables to the SQL statement
 		stmt.BindTimestamp(1, wxDateTime::Now());
 		wxSQLite3ResultSet result = stmt.ExecuteQuery();
@@ -324,10 +312,8 @@ void CReminderDialog::FillTasksList()
 			m_pTasksList->SetItem(nIndex, 2, result.GetString(2));
 			nIndex++;
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 wxTimeSpan CReminderDialog::GetTimeSpan(int weeks, int days, int hours, int minutes)

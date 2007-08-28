@@ -79,12 +79,11 @@ void CAddContactDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 	
 	if(m_nEditContact != -1)
 	{
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("users")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("users")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID, title, firstName, middleName, lastName, suffix, nickName from users WHERE ID = %d"), m_nEditContact);
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				m_pPrimaryDetailsPanel->SetTitle(result.GetString(1));
@@ -93,35 +92,37 @@ void CAddContactDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 				m_pPrimaryDetailsPanel->SetLastName(result.GetString(4));
 				m_pPrimaryDetailsPanel->SetSuffix(result.GetString(5));
 				m_pPrimaryDetailsPanel->SetNickName(result.GetString(6));
-
+				
 				int nIndex = 0;
-				sqlCmd = wxString::Format(wxT("SELECT type, emailAddress from email WHERE userID = %d"), result.GetInt(0));
-				wxSQLite3ResultSet emailResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				int nID = result.GetInt(0);
+				result.Finalize();
+				sqlCmd = wxString::Format(wxT("SELECT type, emailAddress from email WHERE userID = %d"), nID);
+				wxSQLite3ResultSet emailResult = dbConn->ExecuteQuery(sqlCmd);
 				while(emailResult.NextRow() && nIndex < 2)
 				{
 					m_pPrimaryDetailsPanel->SetEmail(nIndex++, emailResult.GetString(0), emailResult.GetString(1));
 				}
+				emailResult.Finalize();
 
 				nIndex = 0;
-				sqlCmd = wxString::Format(wxT("SELECT type, phoneNumber from telephone WHERE userID = %d"), result.GetInt(0));
-				wxSQLite3ResultSet mobileResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				sqlCmd = wxString::Format(wxT("SELECT type, phoneNumber from telephone WHERE userID = %d"), nID);
+				wxSQLite3ResultSet mobileResult = dbConn->ExecuteQuery(sqlCmd);
 				while(mobileResult.NextRow() && nIndex < 2)
 				{
 					m_pPrimaryDetailsPanel->SetTelephone(nIndex++, mobileResult.GetString(0), mobileResult.GetString(1));
 				}
+				mobileResult.Finalize();
 
 				nIndex = 0;
-				sqlCmd = wxString::Format(wxT("SELECT IMProvider, IMAddress from IM WHERE userID = %d"), result.GetInt(0));
-				wxSQLite3ResultSet IMResult = wxSQLiteDB->ExecuteQuery(sqlCmd);
+				sqlCmd = wxString::Format(wxT("SELECT IMProvider, IMAddress from IM WHERE userID = %d"), nID);
+				wxSQLite3ResultSet IMResult = dbConn->ExecuteQuery(sqlCmd);
 				while(IMResult.NextRow() && nIndex < 2)
 				{
 					m_pPrimaryDetailsPanel->SetIM(nIndex++, IMResult.GetString(0), IMResult.GetString(1));
 				}
+				IMResult.Finalize();
 			}
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 }
 
@@ -166,58 +167,50 @@ int CAddContactDialog::AddUserInfo(void)
 	wxString strSuffix = m_pPrimaryDetailsPanel->GetSuffix();
 	wxString strNickName = m_pPrimaryDetailsPanel->GetNickName();
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("users")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("users")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE users(ID INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(16), firstName VARCHAR(128), middleName VARCHAR(128), lastName VARCHAR(128), suffix VARCHAR(32), nickName VARCHAR(64));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE users(ID INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(16), firstName VARCHAR(128), middleName VARCHAR(128), lastName VARCHAR(128), suffix VARCHAR(32), nickName VARCHAR(64));"));
 	}
 
 	if(m_nEditContact != -1)
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT nickName from users WHERE nickName = '%s' AND ID <> %d"), strNickName.Lower(), m_nEditContact);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			wxMessageBox(wxT("The nick name has been already assigned. Please choose a different nick name."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
 			m_pPrimaryDetailsPanel->SetNickNameFocus();
-			wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 			return -1;
 		}
+		result.Finalize();
 		sqlCmd = wxString::Format(wxT("DELETE FROM users WHERE ID = %d"), m_nEditContact);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT nickName from users WHERE nickName = '%s'"), strNickName);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			wxMessageBox(wxT("The nick name has been already assigned. Please choose a different nick name."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
 			m_pPrimaryDetailsPanel->SetNickNameFocus();
-			wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 			return -1;
 		}
+		result.Finalize();
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("Insert INTO users('title', 'firstName', 'middleName', 'lastName', 'suffix', 'nickName') VALUES('%s', '%s', '%s', '%s', '%s', '%s')"), strTitle, strFirstName, strMiddleName, strLastName, strSuffix, strNickName.Lower());
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	int nIDInserted = 0;
 	sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), strNickName);
-	wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+	wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 	if(result.NextRow())
 	{
 		nIDInserted = result.GetInt(0);
 	}
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	result.Finalize();
 	return nIDInserted;
 }
 
@@ -228,30 +221,25 @@ void CAddContactDialog::AddUserEmail(int nID)
 	m_pPrimaryDetailsPanel->GetEmail(0, strEmailCategory[0], strEmailAddress[0]);
 	m_pPrimaryDetailsPanel->GetEmail(1, strEmailCategory[1], strEmailAddress[1]);
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("email")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("email")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE email(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, type VARCHAR(32), emailAddress VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE email(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, type VARCHAR(32), emailAddress VARCHAR(255));"));
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("DELETE FROM email WHERE userID = %d"), nID);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	if(strEmailAddress[0] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO email('userID', 'type', 'emailAddress') VALUES(%d, '%s', '%s')"), nID, strEmailCategory[0], strEmailAddress[0]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
 	if(strEmailAddress[1] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO email('userID', 'type', 'emailAddress') VALUES(%d, '%s', '%s')"), nID, strEmailCategory[1], strEmailAddress[1]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CAddContactDialog::AddUserTelephone(int nID)
@@ -261,30 +249,25 @@ void CAddContactDialog::AddUserTelephone(int nID)
 	m_pPrimaryDetailsPanel->GetTelephone(0, strPhoneCategory[0], strPhoneNumber[0]);
 	m_pPrimaryDetailsPanel->GetTelephone(1, strPhoneCategory[1], strPhoneNumber[1]);
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("telephone")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("telephone")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE telephone(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, type VARCHAR(32), phoneNumber VARCHAR(32));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE telephone(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, type VARCHAR(32), phoneNumber VARCHAR(32));"));
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("DELETE FROM telephone WHERE userID = %d"), nID);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	if(strPhoneNumber[0] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO telephone('userID', 'type', 'phoneNumber') VALUES(%d, '%s', '%s')"), nID, strPhoneCategory[0], strPhoneNumber[0]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
 	if(strPhoneNumber[1] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO telephone('userID', 'type', 'phoneNumber') VALUES(%d, '%s', '%s')"), nID, strPhoneCategory[1], strPhoneNumber[1]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CAddContactDialog::AddUserIM(int nID)
@@ -294,28 +277,23 @@ void CAddContactDialog::AddUserIM(int nID)
 	m_pPrimaryDetailsPanel->GetIM(0, strIMProvider[0], strIMAddress[0]);
 	m_pPrimaryDetailsPanel->GetIM(1, strIMProvider[1], strIMAddress[1]);
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("IM")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("IM")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE IM(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, IMProvider VARCHAR(32), IMAddress VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE IM(ID INTEGER PRIMARY KEY AUTOINCREMENT, userID INTEGER, IMProvider VARCHAR(32), IMAddress VARCHAR(255));"));
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("DELETE FROM IM WHERE userID = %d"), nID);
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	if(strIMAddress[0] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO IM('userID', 'IMProvider', 'IMAddress') VALUES(%d, '%s', '%s')"), nID, strIMProvider[0], strIMAddress[0]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
 	if(strIMAddress[1] != wxEmptyString)
 	{
 		sqlCmd = wxString::Format(wxT("Insert INTO IM('userID', 'IMProvider', 'IMAddress') VALUES(%d, '%s', '%s')"), nID, strIMProvider[1], strIMAddress[1]);
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

@@ -191,11 +191,10 @@ void COptionsPanel::CreateGUIControls()
 	Layout();
 
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(32), value VARCHAR(32));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(32), value VARCHAR(32));"));
 	}
 	else
 	{
@@ -209,7 +208,7 @@ void COptionsPanel::CreateGUIControls()
 		//int nKeyCode = VK_OEM_1;
 		wxString sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'AutoStart';"));
 		{
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				if(result.GetString(0) == wxT("true"))
@@ -217,10 +216,11 @@ void COptionsPanel::CreateGUIControls()
 				else
 					m_pCheckBoxAutoStart->SetValue(false);
 			}
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'VirtualClipboard';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				if(result.GetString(0) == wxT("true"))
@@ -228,12 +228,14 @@ void COptionsPanel::CreateGUIControls()
 				else
 					m_pCheckBoxVirtualClipboard->SetValue(false);
 			}
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'ClipboardIndex';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				m_pComboClipboardIndex->SetValue(result.GetString(0));
+			result.Finalize();
 		}
 		//{
 		//	sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'FaceName';"));
@@ -299,9 +301,6 @@ void COptionsPanel::CreateGUIControls()
 		//}
 		//m_pTextCtrlHotKey->SetValue(wxString::Format(wxT("%c"), GetCharFromKeyCode(nKeyCode)));
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 //void COptionsPanel::OnFontButton(wxCommandEvent &event)
@@ -354,22 +353,21 @@ void COptionsPanel::OnApplyButton(wxCommandEvent &event)
 		delete pRegKey;
 #endif
 	}
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(32), value VARCHAR(32));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(32), value VARCHAR(32));"));
 	}
 	wxString sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'AutoStart';"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	if (m_pCheckBoxAutoStart->GetValue())
 		sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('AutoStart', 'true');"));
 	else
 		sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('AutoStart', 'false');"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'VirtualClipboard';"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	if (m_pCheckBoxVirtualClipboard->GetValue())
 	{
 		sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('VirtualClipboard', 'true');"));
@@ -380,13 +378,14 @@ void COptionsPanel::OnApplyButton(wxCommandEvent &event)
 		sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('VirtualClipboard', 'false');"));
 		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->EnableVirtualClipboard(false);
 	}
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 
 	sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'ClipboardIndex';"));
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('ClipboardIndex', '%s');"), m_pComboClipboardIndex->GetValue());
-	wxSQLiteDB->ExecuteUpdate(sqlCmd);
+	dbConn->ExecuteUpdate(sqlCmd);
 	CClipBoardManager::GetInstance()->SetVirtualClipBoardIndex(wxAtoi(m_pComboClipboardIndex->GetValue())-1);
+	event.Skip(true);
 	//sqlCmd = wxString::Format(wxT("DELETE FROM settings WHERE key = 'FaceName';"));
 	//wxSQLiteDB->ExecuteUpdate(sqlCmd);
 	//sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('FaceName', '%s');"), m_FontData.GetChosenFont().GetFaceName());
@@ -419,10 +418,6 @@ void COptionsPanel::OnApplyButton(wxCommandEvent &event)
 	//wxSQLiteDB->ExecuteUpdate(sqlCmd);
 	//sqlCmd = wxString::Format(wxT("INSERT INTO settings(key, value) VALUES('KeyCode', '%d');"), nHotKey);
 	//wxSQLiteDB->ExecuteUpdate(sqlCmd);
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
-	event.Skip(true);
 
 	//wxWindow *pParent = GetParent();
 	//while(pParent->GetParent())
@@ -506,19 +501,15 @@ void COptionsPanel::OnKeysAssignmentButton(wxCommandEvent &event)
 int COptionsPanel::CountSearchEngine(void)
 {
 	int nCount = 0;
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("searchengines")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT COUNT(*) FROM searchengines"));
-		nCount = wxSQLiteDB->ExecuteScalar(sqlCmd);
+		nCount = dbConn->ExecuteScalar(sqlCmd);
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	return nCount;
 }

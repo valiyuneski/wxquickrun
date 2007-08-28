@@ -94,19 +94,18 @@ void CSearchEngineDlg::OnAddButton(wxCommandEvent &event)
 	{
 		wxString strEngineName = searchEntryDlg.GetSearchEngineName();
 		wxString strEngineURL = searchEntryDlg.GetSearchEngineURL();
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(!dbConn->TableExists(wxT("searchengines")))
 		{
-			wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+			dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 		}
 		else
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT COUNT(*) FROM searchengines WHERE name = '%s';"), strEngineName);
-			if(wxSQLiteDB->ExecuteScalar(sqlCmd) == 0)
+			if(dbConn->ExecuteScalar(sqlCmd) == 0)
 			{
 				wxString sqlCmd = wxString::Format(wxT("INSERT INTO searchengines(name, url) VALUES (?, ?);"));
-				wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+				wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 				// Bind the variables to the SQL statement
 				stmt.Bind(1, strEngineName);
 				stmt.Bind(2, strEngineURL);
@@ -121,9 +120,6 @@ void CSearchEngineDlg::OnAddButton(wxCommandEvent &event)
 				wxMessageBox(strMsg, wxT("wxQuickRun"), wxOK|wxCENTRE|wxICON_ERROR, this);
 			}
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	event.Skip(false);
 }
@@ -143,19 +139,18 @@ void CSearchEngineDlg::OnEditButton(wxCommandEvent &event)
 		searchEntryDlg.SetSearchEngineURL(strEngineURL);
 		if(searchEntryDlg.ShowModal() == wxID_OK)
 		{
-			wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-			wxSQLiteDB->Open(DATABASE_FILE);
-			if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+			DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+			if(!dbConn->TableExists(wxT("searchengines")))
 			{
-				wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+				dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 			}
 			else
 			{
 				wxString sqlCmd = wxString::Format(wxT("SELECT COUNT(*) FROM searchengines WHERE name = '%s';"), searchEntryDlg.GetSearchEngineName());
-				if(strEngineName == searchEntryDlg.GetSearchEngineName() || wxSQLiteDB->ExecuteScalar(sqlCmd) == 0)
+				if(strEngineName == searchEntryDlg.GetSearchEngineName() || dbConn->ExecuteScalar(sqlCmd) == 0)
 				{
 					wxString sqlCmd = wxString::Format(wxT("UPDATE searchengines SET name = ?, url = ? WHERE name = ?;"));
-					wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+					wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 					// Bind the variables to the SQL statement
 					stmt.Bind(1, searchEntryDlg.GetSearchEngineName());
 					stmt.Bind(2, searchEntryDlg.GetSearchEngineURL());
@@ -171,9 +166,6 @@ void CSearchEngineDlg::OnEditButton(wxCommandEvent &event)
 					wxMessageBox(strMsg, wxT("wxQuickRun"), wxOK|wxCENTRE|wxICON_ERROR, this);
 				}
 			}
-			wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 		}
 	}
 	event.Skip(false);
@@ -187,24 +179,20 @@ void CSearchEngineDlg::OnDeleteButton(wxCommandEvent &event)
 	{
 		wxString strEngineName = m_pListCtrlSearchEngine->GetItemText(item);
 		m_pListCtrlSearchEngine->DeleteItem(item);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(!dbConn->TableExists(wxT("searchengines")))
 		{
-			wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+			dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 		}
 		else
 		{
 			wxString sqlCmd = wxString::Format(wxT("DELETE FROM searchengines WHERE name = ?;"));
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Bind the variables to the SQL statement
 			stmt.Bind(1, strEngineName);
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 	event.Skip(false);
 }
@@ -233,16 +221,15 @@ wxString CSearchEngineDlg::GetTextByColumn(long nIndex, int nCol)
 void CSearchEngineDlg::FillSearchEnginesList(void)
 {
 	m_pListCtrlSearchEngine->DeleteAllItems();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("searchengines")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("searchengines")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table searchengines(ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64), url VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT name, url FROM searchengines"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		int nCount = 0;
 		while(result.NextRow())
 		{
@@ -250,8 +237,6 @@ void CSearchEngineDlg::FillSearchEnginesList(void)
 			m_pListCtrlSearchEngine->SetItem(item, 1, result.GetString(1));
 			nCount++;
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

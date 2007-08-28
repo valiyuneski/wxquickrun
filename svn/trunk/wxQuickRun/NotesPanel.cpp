@@ -104,25 +104,22 @@ void CNotesPanel::CreateGUIControls()
 	m_pButtonPrevious->Disable();
 	m_pButtonNext->Disable();
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	int nID = -1;
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT ID from notes LIMIT 1;"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			nID = result.GetInt(0);
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	if(nID != -1)
 		RefreshNote(nID);
 }
@@ -165,23 +162,19 @@ void CNotesPanel::OnCopyText(wxCommandEvent &event)
 
 void CNotesPanel::OnSaveText(wxCommandEvent &event)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxT("UPDATE notes SET note = ? WHERE ID = ?;");
-		wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+		wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 		stmt.Bind(1, m_pTextCtrlNote->GetValue());
 		stmt.Bind(2, wxAtoi(m_pComboBoxNoteID->GetValue()));
 		stmt.ExecuteUpdate();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CNotesPanel::OnAddNote(wxCommandEvent &event)
@@ -191,41 +184,33 @@ void CNotesPanel::OnAddNote(wxCommandEvent &event)
 
 wxLongLong CNotesPanel::AddNote(wxString strNote)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	wxString sqlCmd = wxString::Format(wxT("Insert INTO notes('note') VALUES(?)"));
-	wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+	wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 	// Bind the variables to the SQL statement
 	stmt.Bind(1, strNote);
 	// Execute the SQL Query
 	stmt.ExecuteUpdate();
-	wxLongLong nID = wxSQLiteDB->GetLastRowId();
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
+	wxLongLong nID = dbConn->GetLastRowId();
 	return nID;
 }
 
 void CNotesPanel::OnDeleteNote(wxCommandEvent &event)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("DELETE FROM notes WHERE ID = %d;"), wxAtoi(m_pComboBoxNoteID->GetValue()));
-		wxSQLiteDB->ExecuteUpdate(sqlCmd);
+		dbConn->ExecuteUpdate(sqlCmd);
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	m_pTextCtrlNote->SetValue(wxEmptyString);
 	m_pComboBoxNoteID->Delete(m_pComboBoxNoteID->GetSelection());
 	m_pComboBoxNoteID->SetSelection(0);
@@ -259,49 +244,43 @@ void CNotesPanel::OnNoteIDSelection(wxCommandEvent &event)
 
 void CNotesPanel::RefreshNote(int nID)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT note from notes WHERE ID = %d;"), nID);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			m_pTextCtrlNote->SetValue(result.GetString(0));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	RefreshNavigationControls(nID);
 }
 
 void CNotesPanel::RefreshNavigationControls(wxLongLong nID)
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("notes")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("notes")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE notes(ID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT ID from notes;"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		m_pComboBoxNoteID->Clear();
 		while(result.NextRow())
 		{
 			m_pComboBoxNoteID->Append(wxString::Format(wxT("%d"), result.GetInt(0)));
 		}
+		result.Finalize();
 		m_pComboBoxNoteID->SetValue(wxString::Format(wxT("%d"), nID));
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	int nSel = m_pComboBoxNoteID->GetSelection();
 	int nCount = m_pComboBoxNoteID->GetCount();
 	m_pButtonPrevious->Enable();

@@ -112,38 +112,39 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 	m_pTimer = new wxTimer(this, wxID_TIMER);
 	m_pTimer->Start(m_nTimerInterval, wxTIMER_CONTINUOUS);
 	ShowTime();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select keyword from Commands"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			AddValidInputValues(result.GetString(0));
 		}
+		result.Finalize();
 	}
 	else
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table Commands(ID INTEGER PRIMARY KEY AUTOINCREMENT, keyword VARCHAR(32), executableFile VARCHAR(255), params VARCHAR(255), startUpPath VARCHAR(255), notes VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table Commands(ID INTEGER PRIMARY KEY AUTOINCREMENT, keyword VARCHAR(32), executableFile VARCHAR(255), params VARCHAR(255), startUpPath VARCHAR(255), notes VARCHAR(255));"));
 	}
-	if(wxSQLiteDB->TableExists(wxT("users")))
+	if(dbConn->TableExists(wxT("users")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select nickName from users"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			AddValidInputValues(wxT("c:")+result.GetString(0));
 			AddValidInputValues(wxT("m:")+result.GetString(0));
 		}
+		result.Finalize();
 	}
 	else
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE users(ID INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(16), firstName VARCHAR(128), middleName VARCHAR(128), lastName VARCHAR(128), suffix VARCHAR(32), nickName VARCHAR(64));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE users(ID INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(16), firstName VARCHAR(128), middleName VARCHAR(128), lastName VARCHAR(128), suffix VARCHAR(32), nickName VARCHAR(64));"));
 	}
-	if(!wxSQLiteDB->TableExists(wxT("settings")))
+	if(!dbConn->TableExists(wxT("settings")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE settings(key VARCHAR(255), value VARCHAR(255));"));
 	}
 	else
 	{
@@ -155,33 +156,38 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 		wxString sqlCmd;
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'FaceName';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				strFaceName = result.GetString(0);
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'FontWeight';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				fontWeight = (wxFontWeight)wxAtoi(result.GetString(0));
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'fontStyle';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				fontStyle = wxAtoi(result.GetString(0));
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'fontColor';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				fontColor = wxAtol(result.GetString(0));
+			result.Finalize();
 		}
 		{
 			sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'PointSize';"));
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 				nPointSize = wxAtoi(result.GetString(0));
+			result.Finalize();
 		}
 		wxFont font = GetFont();
 		font.SetFaceName(strFaceName);
@@ -193,9 +199,6 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 		textAttr.SetTextColour(fontColor);
 		SetDefaultStyle(textAttr);
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 
 	m_pCommandTextCtrl = this;
 }
@@ -215,12 +218,11 @@ void CCommandTextCtrl::ExecuteCommand(wxString strExecCommand)
 		return;
 	if(SmartProgrammer(strExecCommand))
 		return;
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select executableFile, params, startUpPath, ID from Commands WHERE keyword = '%s'"), strExecCommand);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		bool bExecuted = false;
 		if(result.NextRow())
 		{
@@ -229,10 +231,6 @@ void CCommandTextCtrl::ExecuteCommand(wxString strExecCommand)
 			wxString param = result.GetString(1);
 			int nCommandID = result.GetInt(3);
 			result.Finalize();
-			if(wxSQLiteDB)
-				wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 			if(param.Find(wxT("???")) > -1)
 			{
 				CParametersDlg paramDlg(this);
@@ -339,10 +337,6 @@ void CCommandTextCtrl::ExecuteCommand(wxString strExecCommand)
 			}
 		}
 	}
-	if(wxSQLiteDB)
-		wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CCommandTextCtrl::OnTextEnter(wxCommandEvent &event)
@@ -417,20 +411,17 @@ void CCommandTextCtrl::OnContextMenu(wxContextMenuEvent &event)
 	wxMenu *pPOPMenu = new wxMenu();
 	wxMenu* keywords = new wxMenu;
 
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select ID, keyword from Commands"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			keywords->Append(wxID_MENU_POPUP_KEYWORDS+result.GetInt(0), result.GetString(1));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 
 	wxMenuItem* move = new wxMenuItem(pPOPMenu, wxID_MENU_POPUP_MOVE_USING_KEYBOARD, wxT("&Move using keyboard"), wxEmptyString, wxITEM_NORMAL);
 	wxMenuItem* keyword = new wxMenuItem(pPOPMenu, wxID_MENU_POPUP_ADD_KEYWORD, wxT("Add &Keyword..."), wxEmptyString, wxITEM_NORMAL);
@@ -572,51 +563,39 @@ void CCommandTextCtrl::OnMenuKeywords(wxCommandEvent &event)
 void CCommandTextCtrl::OnExecuteKeywords(int eventID)
 {
 	int keyID = eventID-wxID_MENU_POPUP_KEYWORDS;
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("Commands")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("select executableFile, params, startUpPath from Commands WHERE ID=%d"), keyID);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			wxExecute(result.GetString(0)+wxT(" ")+result.GetString(1), wxEXEC_ASYNC, NULL);
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CCommandTextCtrl::OnMenuAddTask(wxCommandEvent& WXUNUSED(event))
 {
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("categories")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("categories")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 		wxMessageBox(wxT("Please add a task category, before creating a task."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		return;
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT category FROM categories"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(!result.NextRow())
 		{
+			result.Finalize();
 			wxMessageBox(wxT("Please add a task category, before creating a task."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
-			wxSQLiteDB->Close();
-			delete wxSQLiteDB;
-			wxSQLiteDB = NULL;
 			return;
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	CAddTaskDialog addTaskDlg(this, CAddTaskDialog::wxID_DIALOG_ADD_TASK);
 	addTaskDlg.ShowModal();
 }
@@ -745,21 +724,18 @@ bool CCommandTextCtrl::OnContactsHandler(wxString strExecCommand)
 		strContact.Trim(false);
 		strContact.Trim(true);
 		CAddContactDialog dlgAddContact(this, CContactsPanel::wxID_DIALOG_ADD_CONTACT);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
 		int nID = -1;
-		if(wxSQLiteDB->TableExists(wxT("users")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("users")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM users WHERE nickName = '%s'"), strContact.Lower());
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				nID = result.GetInt(0);
 			}
+			result.Finalize();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		dlgAddContact.SetEditMode( nID );
 		if(dlgAddContact.ShowModal()==wxID_OK)
 		{
@@ -778,14 +754,13 @@ bool CCommandTextCtrl::OnSendMailHandler(wxString strExecCommand)
 		strNickName.Replace(wxT("M:"), wxEmptyString);
 	strNickName.Trim(false);
 	strNickName.Trim(true);
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(wxSQLiteDB->TableExists(wxT("users")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("users")))
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT emailAddress from email WHERE userID IN (SELECT ID FROM users WHERE nickName = '%s')"), strNickName.Lower());
 		try
 		{
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				wxLogNull logNo;
@@ -795,14 +770,12 @@ bool CCommandTextCtrl::OnSendMailHandler(wxString strExecCommand)
 #endif
 				bSendMail = true;
 			}
+			result.Finalize();
 		}
 		catch (...)
 		{
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	return bSendMail;
 }
 

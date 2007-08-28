@@ -127,6 +127,7 @@ void CAddTaskDialog::OnInitDialog(wxInitDialogEvent &event)
 		{
 			arrayCategory.Add(result.GetString(0));
 		}
+		result.Finalize();
 	}
 
 	if(arrayCategory.Count())
@@ -266,37 +267,35 @@ void CAddTaskDialog::OnOK(wxCommandEvent &event)
 		event.Skip(false);
 		return;
 	}
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
 	}
 
 	if(m_strEditSubject != GetTaskSubject() || m_strEditCategory != GetCategory())
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT ID FROM tasks WHERE subject = '%s' AND category = '%s'"), GetTaskSubject(), GetCategory());
 		{
-			wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 			if(result.NextRow())
 			{
 				wxMessageBox(wxT("The task with the particular subject has already been created.\nPlease choose a different subject or category."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
 				m_pTextCtrlSubject->SetFocus();
-				wxSQLiteDB->Close();
-				delete wxSQLiteDB;
-				wxSQLiteDB = NULL;
+				result.Finalize();
 				return;
 			}
+			result.Finalize();
 		}
 	}
 	if(m_strEditSubject != wxEmptyString && m_strEditCategory != wxEmptyString)
 	{
 		wxString sqlCmd = wxString::Format(wxT("DELETE FROM tasks WHERE subject = '%s' AND category = '%s'"), m_strEditSubject, m_strEditCategory);
-		wxSQLiteDB->ExecuteQuery(sqlCmd);
+		dbConn->ExecuteQuery(sqlCmd);
 	}
 
 	wxString sqlCmd = wxString::Format(wxT("Insert INTO tasks('subject', 'category', 'status', 'priority', 'completion', 'startTime', 'endTime', 'reminderTime', 'reminder', 'description') VALUES('%s', '%s', %d, %d, %d, ?, ?, ?, ?, ?)"), GetTaskSubject(), GetCategory(), GetStatus(), GetPriority(), GetPercentCompletion());
-	wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+	wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 	// Bind the variables to the SQL statement
 	stmt.BindTimestamp(1, GetStartTime());
 	stmt.BindTimestamp(2, GetEndTime());
@@ -305,10 +304,6 @@ void CAddTaskDialog::OnOK(wxCommandEvent &event)
 	stmt.Bind(5, GetTaskDetail());
 	// Execute the SQL Query
 	stmt.ExecuteUpdate();
-
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 
 	event.Skip(true);
 }
@@ -643,16 +638,15 @@ void CAddTaskDialog::FillEditInfo(void)
 {
 	m_pTextCtrlSubject->SetValue(m_strEditSubject);
 	m_pComboCategory->SetValue(m_strEditCategory);
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT * from tasks WHERE  subject = '%s' AND category = '%s';"), m_strEditSubject, m_strEditCategory);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		if(result.NextRow())
 		{
 			SetStatus(result.GetInt(3));
@@ -664,8 +658,6 @@ void CAddTaskDialog::FillEditInfo(void)
 			SetReminder(result.GetBool(9));
 			SetTaskDetail(result.GetString(10));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }

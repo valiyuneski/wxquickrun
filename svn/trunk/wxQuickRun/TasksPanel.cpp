@@ -148,6 +148,7 @@ void CTasksPanel::OnAddTask(wxCommandEvent &event)
 			wxMessageBox(wxT("Please add a task category, before creating a task."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
 			return;
 		}
+		result.Finalize();
 	}
 	CAddTaskDialog addTaskDlg(this, CAddTaskDialog::wxID_DIALOG_ADD_TASK);
 	if(addTaskDlg.ShowModal() == wxID_OK)
@@ -182,21 +183,17 @@ void CTasksPanel::OnDeleteTask(wxCommandEvent &event)
 	if ( item != -1 )
 	{
 		wxString strSubject = m_pTasksListCtrl->GetItemText(item);
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("tasks")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("tasks")))
 		{
 			wxString sqlCmd = wxString::Format(wxT("DELETE FROM tasks WHERE subject = ? AND category = ?;"));
-			wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+			wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 			// Bind the variables to the SQL statement
 			stmt.Bind(1, strSubject);
 			stmt.Bind(2, m_pComboCategory->GetValue());
 			// Execute the SQL Query
 			stmt.ExecuteUpdate();
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 		m_pTasksListCtrl->DeleteItem(item);
 		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->SetReminderTimer();
 	}
@@ -233,17 +230,16 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 {
 	m_pTasksListCtrl->DeleteAllItems();
 	m_pComboCategory->SetValue(strCategory);
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("tasks")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
 	}
 	else
 	{
 		//#define TASK_STATUS_COMPLETED	2
 		wxString sqlCmd = wxString::Format(wxT("SELECT * from tasks WHERE  category = '%s' AND status <> 2;"), strCategory);
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			wxString subject = result.GetString(1);
@@ -260,6 +256,7 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 			if(dueDate.Subtract(wxDateTime::Now()).IsNegative())
 				m_pTasksListCtrl->SetItemTextColour(nItem, *wxRED);
 		}
+		result.Finalize();
 		if(m_pTasksListCtrl->GetItemCount() >= 1)
 		{
 			m_pTasksListCtrl->SetColumnWidth(0, (m_pTasksListCtrl->GetClientRect().GetWidth()-180));
@@ -269,9 +266,6 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 			m_pTasksListCtrl->SetColumnWidth(4, 90);
 		}
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 }
 
 void CTasksPanel::OnManageCategories(wxCommandEvent &event)
@@ -308,24 +302,21 @@ void CTasksPanel::OnItemUnChecked(wxListEvent &event)
 void CTasksPanel::FillTasksCategory(void)
 {
 	m_pComboCategory->Clear();
-	wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-	wxSQLiteDB->Open(DATABASE_FILE);
-	if(!wxSQLiteDB->TableExists(wxT("categories")))
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("categories")))
 	{
-		wxSQLiteDB->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
+		dbConn->ExecuteUpdate(wxT("create table categories(ID INTEGER PRIMARY KEY AUTOINCREMENT, category VARCHAR(255));"));
 	}
 	else
 	{
 		wxString sqlCmd = wxString::Format(wxT("SELECT category FROM categories"));
-		wxSQLite3ResultSet result = wxSQLiteDB->ExecuteQuery(sqlCmd);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
 		{
 			m_pComboCategory->Append(result.GetString(0));
 		}
+		result.Finalize();
 	}
-	wxSQLiteDB->Close();
-	delete wxSQLiteDB;
-	wxSQLiteDB = NULL;
 	m_pComboCategory->Select(0);
 }
 
@@ -333,9 +324,8 @@ void CTasksPanel::MarkCheckedAsComplete(void)
 {
 	if(m_pTasksListCtrl->GetItemCount())
 	{
-		wxSQLite3Database* wxSQLiteDB = new wxSQLite3Database();
-		wxSQLiteDB->Open(DATABASE_FILE);
-		if(wxSQLiteDB->TableExists(wxT("tasks")))
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("tasks")))
 		{
 			wxString strSubject;
 			wxString strCategory = m_pComboCategory->GetValue();
@@ -346,7 +336,7 @@ void CTasksPanel::MarkCheckedAsComplete(void)
 				{
 					strSubject = m_pTasksListCtrl->GetItemText(item);
 					sqlCmd = wxString::Format(wxT("DELETE FROM tasks WHERE subject = ? AND category = ?;"));
-					wxSQLite3Statement stmt = wxSQLiteDB->PrepareStatement(sqlCmd);
+					wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 					// Bind the variables to the SQL statement
 					stmt.Bind(1, strSubject);
 					stmt.Bind(2, strCategory);
@@ -355,9 +345,6 @@ void CTasksPanel::MarkCheckedAsComplete(void)
 				}
 			}
 		}
-		wxSQLiteDB->Close();
-		delete wxSQLiteDB;
-		wxSQLiteDB = NULL;
 	}
 }
 
