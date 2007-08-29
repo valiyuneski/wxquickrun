@@ -31,7 +31,6 @@
 #include "muParserBytecode.h"
 #include "muParserError.h"
 
-
 namespace mu
 {
 

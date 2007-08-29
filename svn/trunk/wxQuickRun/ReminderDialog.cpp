@@ -72,7 +72,7 @@ void CReminderDialog::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CReminderDialog::OnInitDialog(wxInitDialogEvent &event)
+void CReminderDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	GetTaskInformation();
 
@@ -141,7 +141,7 @@ void CReminderDialog::OnInitDialog(wxInitDialogEvent &event)
 	FillTasksList();
 }
 
-void CReminderDialog::OnSnoozeButton(wxCommandEvent &event)
+void CReminderDialog::OnSnoozeButton(wxCommandEvent& WXUNUSED(event))
 {
 	wxString strSubject = m_pStaticSubject->GetLabel();
 	wxString strCategory = m_pStaticCategory->GetLabel();
@@ -162,7 +162,7 @@ void CReminderDialog::OnSnoozeButton(wxCommandEvent &event)
 	Close();
 }
 
-void CReminderDialog::OnDismissButton(wxCommandEvent &event)
+void CReminderDialog::OnDismissButton(wxCommandEvent& WXUNUSED(event))
 {
 	wxString strSubject = m_pStaticSubject->GetLabel();
 	wxString strCategory = m_pStaticCategory->GetLabel();
@@ -181,7 +181,7 @@ void CReminderDialog::OnDismissButton(wxCommandEvent &event)
 	Close();
 }
 
-void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
+void CReminderDialog::OnDismissAllButton(wxCommandEvent& WXUNUSED(event))
 {
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(dbConn->TableExists(wxT("tasks")))
@@ -204,7 +204,7 @@ void CReminderDialog::OnDismissAllButton(wxCommandEvent &event)
 	Close();
 }
 
-void CReminderDialog::OnOpenItemButton(wxCommandEvent &event)
+void CReminderDialog::OnOpenItemButton(wxCommandEvent& WXUNUSED(event))
 {
 	wxString strSubject = m_pStaticSubject->GetLabel();
 	wxString strCategory = m_pStaticCategory->GetLabel();

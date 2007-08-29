@@ -135,9 +135,11 @@ bool wxCheckedListCtrl::GetItem(wxListItem& info) const
 	if (!wxListCtrl::GetItem(info))	
 		return FALSE;
 
+#ifdef __WXDEBUG__
 	// these are our additional supported states: read them from m_stateList
 	bool checked = (m_stateList[info.m_itemId] & wxLIST_STATE_CHECKED) != 0;
 	bool enabled = (m_stateList[info.m_itemId] & wxLIST_STATE_ENABLED) != 0;
+#endif
 
 	// now intercept state requests about enable or check mode
 	if ((original.m_mask & wxLIST_MASK_STATE) &&

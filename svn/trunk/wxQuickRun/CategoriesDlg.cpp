@@ -61,7 +61,7 @@ void CCategoriesDlg::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CCategoriesDlg::OnInitDialog(wxInitDialogEvent &event)
+void CCategoriesDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	///Sizer for adding the controls created by users
 	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);

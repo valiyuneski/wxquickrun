@@ -102,7 +102,7 @@ void CKeysAssignDlg::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CKeysAssignDlg::OnInitDialog(wxInitDialogEvent &event)
+void CKeysAssignDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	SetMinSize(wxSize(450, 300));
 	SetIcon(wxICON(IDI_ICON_APPICON));

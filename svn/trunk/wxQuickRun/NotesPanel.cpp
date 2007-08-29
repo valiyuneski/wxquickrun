@@ -124,7 +124,7 @@ void CNotesPanel::CreateGUIControls()
 		RefreshNote(nID);
 }
 
-void CNotesPanel::OnTextNoteChange(wxCommandEvent &event)
+void CNotesPanel::OnTextNoteChange(wxCommandEvent& WXUNUSED(event))
 {
 	if(m_pTextCtrlNote->GetValue().Length()==0)
 	{
@@ -143,7 +143,7 @@ void CNotesPanel::OnTextNoteChange(wxCommandEvent &event)
 	}
 }
 
-void CNotesPanel::OnCopyText(wxCommandEvent &event)
+void CNotesPanel::OnCopyText(wxCommandEvent& WXUNUSED(event))
 {
 	wxString strText = m_pTextCtrlNote->GetStringSelection();
 	if (strText == wxEmptyString)
@@ -160,7 +160,7 @@ void CNotesPanel::OnCopyText(wxCommandEvent &event)
 	}
 }
 
-void CNotesPanel::OnSaveText(wxCommandEvent &event)
+void CNotesPanel::OnSaveText(wxCommandEvent& WXUNUSED(event))
 {
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("notes")))
@@ -177,7 +177,7 @@ void CNotesPanel::OnSaveText(wxCommandEvent &event)
 	}
 }
 
-void CNotesPanel::OnAddNote(wxCommandEvent &event)
+void CNotesPanel::OnAddNote(wxCommandEvent& WXUNUSED(event))
 {
 	RefreshNavigationControls(AddNote(m_pTextCtrlNote->GetValue()));
 }
@@ -199,7 +199,7 @@ wxLongLong CNotesPanel::AddNote(wxString strNote)
 	return nID;
 }
 
-void CNotesPanel::OnDeleteNote(wxCommandEvent &event)
+void CNotesPanel::OnDeleteNote(wxCommandEvent& WXUNUSED(event))
 {
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("notes")))
@@ -218,7 +218,7 @@ void CNotesPanel::OnDeleteNote(wxCommandEvent &event)
 	RefreshNote(nID);
 }
 
-void CNotesPanel::OnPreviousNote(wxCommandEvent &event)
+void CNotesPanel::OnPreviousNote(wxCommandEvent& WXUNUSED(event))
 {
 	int nSel = m_pComboBoxNoteID->GetSelection();
 	nSel--;
@@ -227,7 +227,7 @@ void CNotesPanel::OnPreviousNote(wxCommandEvent &event)
 	RefreshNote(nID);
 }
 
-void CNotesPanel::OnNextNote(wxCommandEvent &event)
+void CNotesPanel::OnNextNote(wxCommandEvent& WXUNUSED(event))
 {
 	int nSel = m_pComboBoxNoteID->GetSelection();
 	nSel++;
@@ -236,7 +236,7 @@ void CNotesPanel::OnNextNote(wxCommandEvent &event)
 	RefreshNote(nID);
 }
 
-void CNotesPanel::OnNoteIDSelection(wxCommandEvent &event)
+void CNotesPanel::OnNoteIDSelection(wxCommandEvent& WXUNUSED(event))
 {
 	int nID = wxAtoi(m_pComboBoxNoteID->GetValue());
 	RefreshNote(nID);

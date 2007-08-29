@@ -362,9 +362,9 @@ void CSendKeys::PopUpShiftKeys()
 // Sends a key string
 bool CSendKeys::SendKeys(LPCTSTR KeysString, bool Wait)
 {
-  WORD MKey, NumTimes;
+  WORD MKey, NumTimes = 0;
   TCHAR KeyString[300] = {0};
-  bool retval  = false;
+  //bool retval  = false;
   int  keyIdx;
 
   LPTSTR pKey = (LPTSTR) KeysString;
@@ -374,8 +374,9 @@ bool CSendKeys::SendKeys(LPCTSTR KeysString, bool Wait)
 
   m_bWinDown = m_bShiftDown = m_bControlDown = m_bAltDown = m_bUsingParens = false;
 
-  while (ch = *pKey)
+  while (*pKey != _TXCHAR('\0'))
   {
+	ch = *pKey;
     switch (ch)
     {
     // begin modifier group
@@ -449,7 +450,7 @@ bool CSendKeys::SendKeys(LPCTSTR KeysString, bool Wait)
         if (_tcsnicmp(KeyString, _T("VKEY"), 4) == 0)
         {
           p = KeyString + 4;
-          MKey = _ttoi(p);
+          MKey = WORD(_ttoi(p));
         }
         else if (_tcsnicmp(KeyString, _T("BEEP"), 4) == 0)
         {
@@ -498,7 +499,7 @@ bool CSendKeys::SendKeys(LPCTSTR KeysString, bool Wait)
             {
               p = KeyString + t;
               // Take the specified number of times
-              NumTimes = _ttoi(p);
+              NumTimes = WORD(_ttoi(p));
             }
 
             if (KeyNames[keyIdx].normalkey)

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=wxQuickRun
-AppVerName=wxQuickRun 0.83b
+AppVerName=wxQuickRun 0.95
 AppPublisher=Priyank Bolia.
 AppPublisherURL=http://www.priyank.co.in/wxQuickRun/
 AppSupportURL=http://www.priyank.co.in/wxQuickRun/
@@ -17,8 +17,8 @@ OutputDir=..\..\wxQuickRun\Setup
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=0.8.3.0
-VersionInfoTextVersion=0.83b
+VersionInfoVersion=0.9.5.0
+VersionInfoTextVersion=0.95
 AppCopyright=Copyright (C) 2006-2007 Priyank Bolia. All rights reserved.
 
 [Languages]
@@ -77,7 +77,7 @@ Name: {app}; Type: filesandordirs
 
 [Registry]
 Root: HKCU; Subkey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: string; ValueName: wxQuickRun; ValueData: {app}\wxQuickRun.exe; Flags: noerror uninsdeletevalue; Tasks: ; Languages: 
-Root: HKCU; Subkey: Software\Priyank Bolia\wxQuickRun; ValueType: string; ValueName: Version; ValueData: 0.83b; Flags: noerror uninsdeletevalue; Tasks: ; Languages: 
+Root: HKCU; Subkey: Software\Priyank Bolia\wxQuickRun; ValueType: string; ValueName: Version; ValueData: 0.95; Flags: noerror uninsdeletevalue; Tasks: ; Languages: 
 Root: HKCU; Subkey: Software\Priyank Bolia\wxQuickRun; ValueType: string; ValueName: Uninstaller; ValueData: {uninstallexe}; Flags: noerror uninsdeletevalue; Tasks: ; Languages: 
 
 [Code]

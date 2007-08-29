@@ -36,9 +36,9 @@
 #include "SendKeys.h"
 #include "StickyNoteFrame.h"
 #include "CommandTextCtrl.h"
-#include "muParser.h"
 #include "SpellCheckDlg.h"
 #include "KeysAssignDlg.h"
+#include "muParser.h"
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -538,7 +538,7 @@ void CQuickRunFrame::OnAddNoteHotKey(wxKeyEvent &event)
 	event.Skip(false);
 }
 
-void CQuickRunFrame::OnIncrementPasteHotKey(wxKeyEvent &event)
+void CQuickRunFrame::OnIncrementPasteHotKey(wxKeyEvent& WXUNUSED(event))
 {
 	wxString strPreviousText = CClipBoardManager::ReadFromGlobalClipboard();
 	if(strPreviousText.IsNumber())
@@ -551,7 +551,7 @@ void CQuickRunFrame::OnIncrementPasteHotKey(wxKeyEvent &event)
 	}
 }
 
-void CQuickRunFrame::OnDecrementPasteHotKey(wxKeyEvent &event)
+void CQuickRunFrame::OnDecrementPasteHotKey(wxKeyEvent& WXUNUSED(event))
 {
 	wxString strPreviousText = CClipBoardManager::ReadFromGlobalClipboard();
 	if(strPreviousText.IsNumber())
@@ -666,7 +666,7 @@ void CQuickRunFrame::EnableVirtualClipboard(bool bEnable)
 	}
 }
 
-void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent &event)
+void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent& WXUNUSED(event))
 {
 	wxMenu *pContextMenu  = new wxMenu();
 	wxMenu* pKeywords = new wxMenu;
@@ -705,7 +705,6 @@ void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent &event)
 		pPasteMenu->Append(wxID_POPUPMENU_PASTE_0+nIndex, strMenuText);
 	}
 
-	wxMenu *pSearchMenu = new wxMenu();
 	pContextMenu->Append(wxID_MENU_POPUP_SEARCH, wxT("&Search"), pSearch );
 	pContextMenu->AppendSeparator();
 	pContextMenu->Append(CCommandTextCtrl::wxID_MENU_POPUP_KEYWORDS, wxT("Key&words"), pKeywords );
@@ -718,6 +717,10 @@ void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent &event)
 	pContextMenu->Append(wxID_MENU_ADD_TASK, wxT("Add &Task"));
 	wxMouseState mouse = wxGetMouseState();
 	PopupMenu(pContextMenu, mouse.GetX()-GetPosition().x-10, mouse.GetY()-GetPosition().y-10);
+	delete pCopyMenu;
+	delete pPasteMenu;
+	delete pKeywords;
+	delete pSearch;
 	delete pContextMenu;
 }
 
@@ -942,7 +945,7 @@ void CQuickRunFrame::OnMenuSearchEngine(wxCommandEvent &event)
 	event.Skip(false);
 }
 
-void CQuickRunFrame::OnReminderTimer(wxTimerEvent &event)
+void CQuickRunFrame::OnReminderTimer(wxTimerEvent& WXUNUSED(event))
 {
 	CReminderDialog remDlg(this);
 	remDlg.SetTaskID(m_nTaskReminderID);

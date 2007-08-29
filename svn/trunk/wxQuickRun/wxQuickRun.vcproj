@@ -136,7 +136,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(ProjectDir)\muParser\include&quot;;&quot;$(ProjectDir)\wxsqlite3\include\&quot;;&quot;$(ProjectDir)\RegExValidator\include&quot;;&quot;$(ProjectDir)\wxDownloadFile\include&quot;;&quot;$(ProjectDir)\wxDownloadFile\src&quot;;&quot;$(ProjectDir)\Hunspell\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\mswu&quot;;&quot;$(WXWIN)\contrib\include&quot;;&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)\muParser\include&quot;;&quot;$(ProjectDir)\wxsqlite3\include\&quot;;&quot;$(ProjectDir)\RegExValidator\include&quot;;&quot;$(ProjectDir)\wxDownloadFile\include&quot;;&quot;$(ProjectDir)\wxDownloadFile\src&quot;;&quot;$(ProjectDir)\Hunspell\include&quot;"
 				PreprocessorDefinitions="wxUSE_UNICODE=1;WIN32;__WIN32__;__WXMSW__;_WINDOWS;_WIN32_WINNT=0x401;WINVER=0x0401;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;wxUSE_STL = 1;wxUSE_CHECKEDLISTCTRL;_WIN32_IE=0x0600;wxUSE_TEXTCTRL=1"
 				StringPooling="true"
 				MinimalRebuild="false"

@@ -472,7 +472,7 @@ void COptionsPanel::OnDownloadEvent(wxDownloadEvent &event)
 	}
 }
 
-void COptionsPanel::OnSelectLanguage(wxCommandEvent & event)
+void COptionsPanel::OnSelectLanguage(wxCommandEvent& WXUNUSED(event))
 {
 	if(wxGetApp().SelectLanguage(this))
 	{

@@ -67,11 +67,11 @@ CGradientPanel::~CGradientPanel(void)
 #endif
 }
 
-void CGradientPanel::OnEraseBackground(wxEraseEvent &event)
+void CGradientPanel::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
 {
 }
 
-void CGradientPanel::OnPaint(wxPaintEvent &event)
+void CGradientPanel::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
 	wxRect rectStep;									// rectangle for color's band
 	wxColor clrColor;									// color for the bands
@@ -140,7 +140,7 @@ void CGradientPanel::OnLeftDown(wxMouseEvent &event)
 	CaptureMouse();
 }
 
-void CGradientPanel::OnLeftUp(wxMouseEvent &event)
+void CGradientPanel::OnLeftUp(wxMouseEvent& WXUNUSED(event))
 {
 	m_bMoving = false;
 	ReleaseMouse();

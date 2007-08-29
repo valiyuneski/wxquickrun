@@ -711,7 +711,11 @@ DWordVal:
 	char HardDriveSerialNumber [1024];
 
 
+#ifdef PRINTING_TO_CONSOLE_ALLOWED
 	void PrintIdeInfo (int drive, DWORD diskdata [256])
+#else
+	void PrintIdeInfo (int, DWORD diskdata [256])
+#endif
 	{
 		//  copy the hard driver serial number to the buffer
 		strcpy (HardDriveSerialNumber, ConvertToString (diskdata, 10, 19));

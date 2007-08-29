@@ -89,7 +89,7 @@ void CAddTaskDialog::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CAddTaskDialog::OnInitDialog(wxInitDialogEvent &event)
+void CAddTaskDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
 	wxStaticBoxSizer* pStaticBoxSizer;
@@ -308,7 +308,7 @@ void CAddTaskDialog::OnOK(wxCommandEvent &event)
 	event.Skip(true);
 }
 
-void CAddTaskDialog::OnButtonStartDate(wxCommandEvent &event)
+void CAddTaskDialog::OnButtonStartDate(wxCommandEvent& WXUNUSED(event))
 {
 	wxPoint point = GetPosition() + m_pButtonStartDate->GetPosition();
 	wxSize size = m_pButtonStartDate->GetSize();
@@ -321,7 +321,7 @@ void CAddTaskDialog::OnButtonStartDate(wxCommandEvent &event)
 	GetStartTime();
 }
 
-void CAddTaskDialog::OnButtonEndDate(wxCommandEvent &event)
+void CAddTaskDialog::OnButtonEndDate(wxCommandEvent& WXUNUSED(event))
 {
 	wxPoint point = GetPosition() + m_pButtonEndDate->GetPosition();
 	wxSize size = m_pButtonEndDate->GetSize();
@@ -333,7 +333,7 @@ void CAddTaskDialog::OnButtonEndDate(wxCommandEvent &event)
 	}
 }
 
-void CAddTaskDialog::OnButtonReminderDate(wxCommandEvent &event)
+void CAddTaskDialog::OnButtonReminderDate(wxCommandEvent& WXUNUSED(event))
 {
 	wxPoint point = GetPosition() + m_pButtonReminderDate->GetPosition();
 	wxSize size = m_pButtonReminderDate->GetSize();
@@ -345,7 +345,7 @@ void CAddTaskDialog::OnButtonReminderDate(wxCommandEvent &event)
 	}
 }
 
-void CAddTaskDialog::OnCheckBoxReminder(wxCommandEvent &event)
+void CAddTaskDialog::OnCheckBoxReminder(wxCommandEvent& WXUNUSED(event))
 {
 	if(m_pCheckBoxReminder->IsChecked())
 	{
@@ -365,7 +365,7 @@ void CAddTaskDialog::OnCheckBoxReminder(wxCommandEvent &event)
 	}
 }
 
-void CAddTaskDialog::OnStatusChange(wxCommandEvent &event)
+void CAddTaskDialog::OnStatusChange(wxCommandEvent& WXUNUSED(event))
 {
 	switch(m_pComboStatus->GetCurrentSelection())
 	{

@@ -64,7 +64,7 @@ void CParametersDlg::OnButtonOK(wxCommandEvent &event)
 	event.Skip(true);
 }
 
-void CParametersDlg::OnInitDialog(wxInitDialogEvent &event)
+void CParametersDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	SetIcon(wxICON(IDI_ICON_APPICON));
 	///Sizer for adding the controls created by users

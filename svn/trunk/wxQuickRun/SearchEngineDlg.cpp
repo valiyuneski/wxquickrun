@@ -61,7 +61,7 @@ void CSearchEngineDlg::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CSearchEngineDlg::OnInitDialog(wxInitDialogEvent &event)
+void CSearchEngineDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	///Sizer for adding the controls created by users
 	wxBoxSizer *pMainSizer = new wxBoxSizer(wxVERTICAL);

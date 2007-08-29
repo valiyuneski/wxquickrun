@@ -59,7 +59,7 @@ void CRegisterDlg::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CRegisterDlg::OnInitDialog(wxInitDialogEvent &event)
+void CRegisterDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	///Sizer for adding the controls created by users
 	wxBoxSizer *pMainSizer = new wxBoxSizer(wxVERTICAL);

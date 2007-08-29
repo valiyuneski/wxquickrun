@@ -22,7 +22,6 @@
 #include "muParserBase.h"
 #include <vector>
 
-
 namespace mu
 {
 

@@ -66,7 +66,7 @@ void CFullNameDialog::OnClose(wxCloseEvent &event)
 	event.Skip(true);
 }
 
-void CFullNameDialog::OnInitDialog(wxInitDialogEvent &event)
+void CFullNameDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 {
 	///Sizer for adding the controls created by users
 	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);

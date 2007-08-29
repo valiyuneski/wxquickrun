@@ -187,7 +187,7 @@ void CPrimaryDetailsPanel::CreateGUIControls()
 	Layout();
 }
 
-void CPrimaryDetailsPanel::OnFullNameButton(wxCommandEvent& event)
+void CPrimaryDetailsPanel::OnFullNameButton(wxCommandEvent& WXUNUSED(event))
 {
 	CFullNameDialog dlgFullName(this, CFullNameDialog::wxID_DIALOG_FULLNAME);
 	dlgFullName.SetTitle(m_strTitle);

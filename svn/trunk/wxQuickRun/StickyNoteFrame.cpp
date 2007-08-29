@@ -147,7 +147,7 @@ void CStickyNoteFrame::OnLeftDown(wxMouseEvent &event)
 	CaptureMouse();
 }
 
-void CStickyNoteFrame::OnLeftUp(wxMouseEvent &event)
+void CStickyNoteFrame::OnLeftUp(wxMouseEvent& WXUNUSED(event))
 {
 	m_bMoving = false;
 	ReleaseMouse();
@@ -169,7 +169,7 @@ void CStickyNoteFrame::OnSize(wxSizeEvent &event)
 	event.Skip(true);
 }
 
-void CStickyNoteFrame::OnSaveToFile(wxCommandEvent &event)
+void CStickyNoteFrame::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
 {
 	wxFileDialog fileDlg(this, wxT("Browse"), wxEmptyString, wxEmptyString, wxT("All Files (*.*)|*.*"), wxSAVE|wxOVERWRITE_PROMPT);
 	if(fileDlg.ShowModal()==wxID_OK)
@@ -186,7 +186,7 @@ void CStickyNoteFrame::OnSaveToFile(wxCommandEvent &event)
 	}
 }
 
-void CStickyNoteFrame::OnImportFromFile(wxCommandEvent &event)
+void CStickyNoteFrame::OnImportFromFile(wxCommandEvent& WXUNUSED(event))
 {
 	wxFileDialog fileDlg(this, wxT("Browse"), wxEmptyString, wxEmptyString, wxT("All Files (*.*)|*.*"), wxOPEN|wxFILE_MUST_EXIST);
 	if(fileDlg.ShowModal()==wxID_OK)
@@ -204,7 +204,7 @@ void CStickyNoteFrame::OnImportFromFile(wxCommandEvent &event)
 	}
 }
 
-void CStickyNoteFrame::OnSetTitle(wxCommandEvent &event)
+void CStickyNoteFrame::OnSetTitle(wxCommandEvent& WXUNUSED(event))
 {
 	wxTextEntryDialog titleDlg(this, wxT("Enter the title of the note:"), wxT("wxQuickRun"));
 	if(titleDlg.ShowModal()==wxID_OK)
