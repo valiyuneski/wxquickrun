@@ -86,6 +86,8 @@ private:
 public:
 	CKeysAssignDlg(wxWindow* parent, wxWindowID id = CKeysAssignDlg::wxID_DIALOG_KEYS_ASSIGN, const wxString& title = wxT("wxQuickRun"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, const wxString& name = wxT("dialogBox"));
 	virtual ~CKeysAssignDlg(void);
+	static void AssignDefaultHotKey(void);
+	static void GetCommandHotKey(wxString strKey, int &nVirtualKey, int &nModifier);
 
 private:
 	void OnClose(wxCloseEvent &event);
@@ -95,7 +97,7 @@ private:
 	void SaveKeyBindingsToDB(void);
 	int GetModifier(wxString strModifier);
 	wxString GetModifierAsString(int nModifier);
-	void SaveRowToDB(wxString strKey, int nModifier, int nVirtualCode);
+	static void SaveRowToDB(wxString strKey, int nModifier, int nVirtualCode);
 	bool CheckForDuplicateKeyBindings(void);
 	void InitControlFromDB(wxString strKey, int nModifier, int nVirtualCode);
 

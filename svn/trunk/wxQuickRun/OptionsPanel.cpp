@@ -422,7 +422,7 @@ void COptionsPanel::OnApplyButton(wxCommandEvent &event)
 	//wxWindow *pParent = GetParent();
 	//while(pParent->GetParent())
 	//	pParent = pParent->GetParent();
-	//((CQuickRunFrame *)pParent)->RegisterFreshHotKey(CQuickRunFrame::wxID_HOTKEY_BRING_FOCUS, nHotKey, nModifier);
+	//((CQuickRunFrame *)pParent)->RegisterHotKeyCommand(CQuickRunFrame::wxID_HOTKEY_BRING_FOCUS, nHotKey, nModifier);
 }
 
 void COptionsPanel::OnCheckForLatestVersion(wxCommandEvent &event)

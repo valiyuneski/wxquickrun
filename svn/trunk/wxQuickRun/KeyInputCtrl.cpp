@@ -78,6 +78,8 @@ void CKeyInputCtrl::SetKeyCode(int nKeyCode)
 
 int CKeyInputCtrl::GetKeyCode(wxString ch)
 {
+	if(ch == wxEmptyString)
+		return 0;
 	if(ch == wxT("Home"))
 		return WXK_HOME;
 	else if(ch == wxT("End"))
@@ -127,13 +129,13 @@ int CKeyInputCtrl::GetKeyCode(wxString ch)
 	else if(ch == wxT("F15"))
 		return WXK_F15;
 	else if(ch == wxT("Up Arrow"))
-		return WXK_UP;
+		return VK_UP;
 	else if(ch == wxT("Down Arrow"))
-		return WXK_DOWN;
+		return VK_DOWN;
 	else if(ch == wxT("Left Arrow"))
-		return WXK_LEFT;
+		return VK_LEFT;
 	else if(ch == wxT("Right Arrow"))
-		return WXK_RIGHT;
+		return VK_RIGHT;
 	else if(ch == wxT("Backspace"))
 		return WXK_BACK;
 	else if(ch == wxT("Numpad Multiply"))
@@ -468,15 +470,19 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 		return wxT("F15");
 		break;
 	case WXK_UP:
+	case VK_UP:
 		return wxT("Up Arrow");
 		break;
 	case WXK_DOWN:
+	case VK_DOWN:
 		return wxT("Down Arrow");
 		break;
 	case WXK_LEFT:
+	case VK_LEFT:
 		return wxT("Left Arrow");
 		break;
 	case WXK_RIGHT:
+	case VK_RIGHT:
 		return wxT("Right Arrow");
 		break;
 	case WXK_BACK:
@@ -592,7 +598,6 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 	case 0x34:
 		return wxT("4");
 		break;
-	case 0x25:
 	case 0x35:
 		return wxT("5");
 		break;
@@ -600,7 +605,6 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 	case 0x36:
 		return wxT("6");
 		break;
-	case 0x26:
 	case 0x37:
 		return wxT("7");
 		break;
@@ -608,7 +612,6 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 	case 0x38:
 		return wxT("8");
 		break;
-	case 0x28:
 	case 0x39:
 		return wxT("9");
 		break;
@@ -733,7 +736,6 @@ wxString CKeyInputCtrl::GetKeyCodeAsString(int nKeyCode)
 		return wxT("]");
 		break;
 	case 0x22:
-	case 0x27:
 	case VK_OEM_7:
 		return wxT("'");
 		break;

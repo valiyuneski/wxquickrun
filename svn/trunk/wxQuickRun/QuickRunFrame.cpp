@@ -38,6 +38,7 @@
 #include "CommandTextCtrl.h"
 #include "muParser.h"
 #include "SpellCheckDlg.h"
+#include "KeysAssignDlg.h"
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -97,8 +98,6 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 : wxFrame(pParent, id, title, pos, size, style, name)
 , m_pTextCtrl(NULL)
 , m_pTaskBarIcon(NULL)
-, m_nHotKeyCode(VK_OEM_3)
-, m_nHotKeyModifier(wxMOD_CONTROL)
 , m_bVirtualClipboard(false)
 , m_pReminderTimer(NULL)
 , m_nTaskReminderID(-1)
@@ -139,50 +138,60 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 				size.SetWidth(wxAtoi(result.GetString(1)));
 			else if(result.GetString(0) == wxT("Height"))
 				size.SetHeight(wxAtoi(result.GetString(1)));
-			else if(result.GetString(0) == wxT("KeyCode"))
-				m_nHotKeyCode = wxAtoi(result.GetString(1));
-			else if(result.GetString(0) == wxT("Modifier"))
-				m_nHotKeyModifier = wxAtoi(result.GetString(1));
 		}
 		result.Finalize();
 		SetSize(pos.x, pos.y, size.GetWidth(), size.GetHeight());
 	}
 
+	InstallHotKeys();
+
+	CreateGUIControls();
+	SetReminderTimer();
+}
+
+void CQuickRunFrame::InstallHotKeys()
+{
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(!dbConn->TableExists(wxT("keybindings")))
+	{
+		dbConn->ExecuteUpdate(wxT("CREATE TABLE keybindings(key VARCHAR(32), modifier NUMERIC(3,0), virtualKey NUMERIC(2,0));"));
+		CKeysAssignDlg::AssignDefaultHotKey();
+	}
 	// Global hot key for bringing the application to focus.
-	RegisterFreshHotKey(wxID_HOTKEY_BRING_FOCUS, m_nHotKeyCode, m_nHotKeyModifier);
+	RegisterHotKey(wxID_HOTKEY_BRING_FOCUS);
 
 	// Global hot key for adding the text from any application to the Notes.
-	RegisterFreshHotKey(wxID_HOTKEY_ADD_NOTE, 0x4E /*N*/, wxMOD_CONTROL|wxMOD_WIN);
+	RegisterHotKey(wxID_HOTKEY_ADD_NOTE);	//0x4E /*N*/, wxMOD_CONTROL|wxMOD_WIN
 
 	// Global hot key for incrementing the clipboard value and paste to the application.
-	RegisterFreshHotKey(wxID_HOTKEY_INC_PASTE, VK_UP, wxMOD_CONTROL);
+	RegisterHotKey(wxID_HOTKEY_INC_PASTE); //VK_UP, wxMOD_CONTROL
 
 	// Global hot key for decrementing the clipboard value and paste to the application.
-	RegisterFreshHotKey(wxID_HOTKEY_DEC_PASTE, VK_DOWN, wxMOD_CONTROL);
+	RegisterHotKey(wxID_HOTKEY_DEC_PASTE);	//VK_DOWN, wxMOD_CONTROL
 
 	// Global hot key for the global menu that work from any application.
-	RegisterFreshHotKey(wxID_HOTKEY_GLOBAL_MENU, 0, wxMOD_CONTROL|wxMOD_WIN|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_GLOBAL_MENU);	//0, wxMOD_CONTROL|wxMOD_WIN|wxMOD_ALT
 
 	// Global hot key for counting the number of characters in the selected text.
-	RegisterFreshHotKey(wxID_HOTKEY_COUNT_CHARS, 0x31, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_COUNT_CHARS);	//0x31, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for converting the selected text to upper case.
-	RegisterFreshHotKey(wxID_HOTKEY_UPPERCASE, 0x32, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_UPPERCASE);		//0x32, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for converting the selected text to lower case.
-	RegisterFreshHotKey(wxID_HOTKEY_LOWERCASE, 0x33, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_LOWERCASE);		//0x33, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for toggling the case of the selected text.
-	RegisterFreshHotKey(wxID_HOTKEY_TOGGLECASE, 0x34, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_TOGGLECASE);	//0x34, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for converting the selected text to sentence case.
-	RegisterFreshHotKey(wxID_HOTKEY_SENTENCECASE, 0x35, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_SENTENCECASE);	//0x35, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for spell checking the selected text.
-	RegisterFreshHotKey(wxID_HOTKEY_CHECKSPELL, 0x36, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_CHECKSPELL);	//0x36, wxMOD_CONTROL|wxMOD_ALT
 
 	// Global hot key for calculating the value of the selected expression.
-	RegisterFreshHotKey(wxID_HOTKEY_CALCULATE, 0x37, wxMOD_CONTROL|wxMOD_ALT);
+	RegisterHotKey(wxID_HOTKEY_CALCULATE);		//0x37, wxMOD_CONTROL|wxMOD_ALT
 
 	wxString sqlCmd = wxString::Format(wxT("SELECT value FROM settings WHERE key = 'VirtualClipboard';"));
 	wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
@@ -191,36 +200,36 @@ CQuickRunFrame::CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString&
 		if(result.GetString(0) == wxT("true"))
 		{
 			// Global hot keys for copying text to advanced virtual clipboard from applications.
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_0, 0x30 /*0*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_1, 0x31 /*1*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_2, 0x32 /*2*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_3, 0x33 /*3*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_4, 0x34 /*4*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_5, 0x35 /*5*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_6, 0x36 /*6*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_7, 0x37 /*7*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_8, 0x38 /*8*/, wxMOD_CONTROL|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_COPY_9, 0x39 /*9*/, wxMOD_CONTROL|wxMOD_WIN);
+			int nKeyCode = 0, nModifier = 0;
+			CKeysAssignDlg::GetCommandHotKey(wxT("ClipCopy"), nKeyCode, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_0, 0x30 /*0*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_1, 0x31 /*1*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_2, 0x32 /*2*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_3, 0x33 /*3*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_4, 0x34 /*4*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_5, 0x35 /*5*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_6, 0x36 /*6*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_7, 0x37 /*7*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_8, 0x38 /*8*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_COPY_9, 0x39 /*9*/, nModifier);
 
 			// Global hot keys for pasting the text from advanced virtual clipboard to applications.
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_0, 0x30 /*0*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_1, 0x31 /*1*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_2, 0x32 /*2*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_3, 0x33 /*3*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_4, 0x34 /*4*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_5, 0x35 /*5*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_6, 0x36 /*6*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_7, 0x37 /*7*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_8, 0x38 /*8*/, wxMOD_SHIFT|wxMOD_WIN);
-			RegisterFreshHotKey(wxID_HOTKEY_PASTE_9, 0x39 /*9*/, wxMOD_SHIFT|wxMOD_WIN);
+			CKeysAssignDlg::GetCommandHotKey(wxT("ClipPaste"), nKeyCode, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_0, 0x30 /*0*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_1, 0x31 /*1*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_2, 0x32 /*2*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_3, 0x33 /*3*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_4, 0x34 /*4*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_5, 0x35 /*5*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_6, 0x36 /*6*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_7, 0x37 /*7*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_8, 0x38 /*8*/, nModifier);
+			RegisterHotKeyCommand(wxID_HOTKEY_PASTE_9, 0x39 /*9*/, nModifier);
 
 			m_bVirtualClipboard = true;
 		}
 	}
 	result.Finalize();
-
-	CreateGUIControls();
-	SetReminderTimer();
 }
 
 CQuickRunFrame::~CQuickRunFrame(void)
@@ -378,20 +387,17 @@ void CQuickRunFrame::OnFocusHotKey(wxKeyEvent &event)
 	event.Skip(false);
 }
 
-void CQuickRunFrame::RegisterFreshHotKey(int hotkeyID, int nKeyCode, int modifiers)
+void CQuickRunFrame::RegisterHotKeyCommand(int hotkeyID, int nKeyCode, int modifiers)
 {
-	if(hotkeyID == wxID_HOTKEY_BRING_FOCUS)
-	{
-		m_nHotKeyCode = nKeyCode;
-		m_nHotKeyModifier = modifiers;
-		wxWindow::UnregisterHotKey(hotkeyID);
-		wxWindow::RegisterHotKey(hotkeyID, m_nHotKeyModifier, m_nHotKeyCode);
-	}
-	else
-	{
-		wxWindow::UnregisterHotKey(hotkeyID);
-		wxWindow::RegisterHotKey(hotkeyID, modifiers, nKeyCode);
-	}
+	wxWindow::UnregisterHotKey(hotkeyID);
+	wxWindow::RegisterHotKey(hotkeyID, modifiers, nKeyCode);
+}
+
+void CQuickRunFrame::RegisterHotKey(int hotkeyID)
+{
+	int nKeyCode = 0, modifiers = 0;
+	CKeysAssignDlg::GetCommandHotKey(ConvertHotkeyID2String(hotkeyID), nKeyCode, modifiers);
+	CQuickRunFrame::RegisterHotKeyCommand(hotkeyID, nKeyCode, modifiers);
 }
 
 void CQuickRunFrame::CopyTextToClipboard(int nIndex)
@@ -602,28 +608,31 @@ void CQuickRunFrame::EnableVirtualClipboard(bool bEnable)
 	else if(bEnable)
 	{
 		// Global hot keys for copying text to advanced virtual clipboard from applications.
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_0, 0x30 /*0*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_1, 0x31 /*1*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_2, 0x32 /*2*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_3, 0x33 /*3*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_4, 0x34 /*4*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_5, 0x35 /*5*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_6, 0x36 /*6*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_7, 0x37 /*7*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_8, 0x38 /*8*/, wxMOD_CONTROL|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_COPY_9, 0x39 /*9*/, wxMOD_CONTROL|wxMOD_WIN);
+		int nKeyCode = 0, nModifier = 0;
+		CKeysAssignDlg::GetCommandHotKey(wxT("ClipCopy"), nKeyCode, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_0, 0x30 /*0*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_1, 0x31 /*1*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_2, 0x32 /*2*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_3, 0x33 /*3*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_4, 0x34 /*4*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_5, 0x35 /*5*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_6, 0x36 /*6*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_7, 0x37 /*7*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_8, 0x38 /*8*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_COPY_9, 0x39 /*9*/, nModifier);
 
 		// Global hot keys for pasting the text from advanced virtual clipboard to applications.
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_0, 0x30 /*0*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_1, 0x31 /*1*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_2, 0x32 /*2*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_3, 0x33 /*3*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_4, 0x34 /*4*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_5, 0x35 /*5*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_6, 0x36 /*6*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_7, 0x37 /*7*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_8, 0x38 /*8*/, wxMOD_SHIFT|wxMOD_WIN);
-		RegisterFreshHotKey(wxID_HOTKEY_PASTE_9, 0x39 /*9*/, wxMOD_SHIFT|wxMOD_WIN);
+		CKeysAssignDlg::GetCommandHotKey(wxT("ClipPaste"), nKeyCode, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_0, 0x30 /*0*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_1, 0x31 /*1*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_2, 0x32 /*2*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_3, 0x33 /*3*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_4, 0x34 /*4*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_5, 0x35 /*5*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_6, 0x36 /*6*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_7, 0x37 /*7*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_8, 0x38 /*8*/, nModifier);
+		RegisterHotKeyCommand(wxID_HOTKEY_PASTE_9, 0x39 /*9*/, nModifier);
 
 		m_bVirtualClipboard = true;
 	}
@@ -1025,4 +1034,41 @@ unsigned int CQuickRunFrame::GetHotkeyID(wxString strKeyID)
 	else if(strKeyID == wxT("Calculation"))
 		return wxID_HOTKEY_CALCULATE;
 	return 0;
+}
+
+wxString CQuickRunFrame::ConvertHotkeyID2String(int nKeyID)
+{
+	if(nKeyID == wxID_HOTKEY_BRING_FOCUS)
+		return wxT("Focus");
+	else if(nKeyID == wxID_HOTKEY_ADD_NOTE)
+		return wxT("AddNote");
+	else if(nKeyID == wxID_HOTKEY_PASTE_CYCLIC_FORWARD)
+		return wxT("PasteFwd");
+	else if(nKeyID == wxID_HOTKEY_PASTE_CYCLIC_BACKWARD)
+		return wxT("PasteBkwd");
+	else if(nKeyID == wxID_HOTKEY_COPY_0)
+		return wxT("ClipCopy");
+	else if(nKeyID ==  wxID_HOTKEY_PASTE_0)
+		return wxT("ClipPaste");
+	else if(nKeyID == wxID_HOTKEY_INC_PASTE)
+		return wxT("PasteInc");
+	else if(nKeyID == wxID_HOTKEY_DEC_PASTE)
+		return wxT("PasteDec");
+	else if(nKeyID == wxID_HOTKEY_GLOBAL_MENU)
+		return wxT("GbMenu");
+	else if(nKeyID == wxID_HOTKEY_COUNT_CHARS)
+		return wxT("CountChars");
+	else if(nKeyID == wxID_HOTKEY_UPPERCASE)
+		return wxT("UpperCase");
+	else if(nKeyID == wxID_HOTKEY_LOWERCASE)
+		return wxT("LowerCase");
+	else if(nKeyID == wxID_HOTKEY_TOGGLECASE)
+		return wxT("ToogleCase");
+	else if(nKeyID == wxID_HOTKEY_SENTENCECASE)
+		return wxT("SentenceCase");
+	else if(nKeyID == wxID_HOTKEY_CHECKSPELL)
+		return wxT("CheckSpell");
+	else if(nKeyID == wxID_HOTKEY_CALCULATE)
+		return wxT("Calculation");
+	return wxEmptyString;
 }

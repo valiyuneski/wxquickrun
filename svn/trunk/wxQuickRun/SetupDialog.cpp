@@ -54,6 +54,7 @@ CSetupDialog::CSetupDialog(wxWindow* parent, wxWindowID id, const wxString& titl
 
 CSetupDialog::~CSetupDialog(void)
 {
+	wxFlatNotebook::CleanUp();
 }
 
 void CSetupDialog::OnClose(wxCloseEvent &event)

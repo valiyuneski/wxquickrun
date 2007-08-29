@@ -39,7 +39,9 @@ public:
 	CQuickRunFrame(wxWindow *pParent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style = wxRESIZE_BORDER | wxCLIP_CHILDREN | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR | wxNO_BORDER | wxWANTS_CHARS, const wxString& name = wxT("Main Frame"));
 	virtual ~CQuickRunFrame(void);
 	void ShowTaskIcon(bool bShow);
-	void RegisterFreshHotKey(int hotkeyID, int nKeyCode, int modifiers);
+	void RegisterHotKeyCommand(int hotkeyID, int nKeyCode, int modifiers);
+	void RegisterHotKey(int hotkeyID);
+	void InstallHotKeys();
 	void EnableVirtualClipboard(bool bEnable);
 	void SetReminderTimer();
 
@@ -103,6 +105,7 @@ private:
 	wxString SentenceCase(wxString str);
 	wxString CalculateExpression(wxString str);
 	unsigned int GetHotkeyID(wxString strKeyID);
+	wxString ConvertHotkeyID2String(int nKeyID);
 	void CopyTextToClipboard(int nIndex);
 	void PasteTextToApp(int nIndex);
 
@@ -181,8 +184,6 @@ private:
 	CCommandTextCtrl *m_pTextCtrl;
 	CTaskBarIcon *m_pTaskBarIcon;
 	bool m_bShowTaskBar;
-	int m_nHotKeyCode;
-	int m_nHotKeyModifier;
 	bool m_bVirtualClipboard;
 	wxTimer *m_pReminderTimer;
 	int m_nTaskReminderID;
