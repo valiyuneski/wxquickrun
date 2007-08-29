@@ -86,6 +86,8 @@ private:
 	bool OnSendMailHandler(wxString strExecCommand);
 	bool OnHttpURLHandler(wxString strExecCommand);
 	bool OnFilesAndFolderHandler(wxString strExecCommand);
+	bool GetNewValidInputValues();
+	void GetDirContents(wxString strDir);
 
 public:
 	enum

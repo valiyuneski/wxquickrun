@@ -25,6 +25,7 @@
  *	\brief 
  *	\author Priyank Bolia
  *  \created 22 Jun, 2006
+ *  \modified 29 Aug, 2007
  **/
 
 #include "wxAutoTextCtrl.h"
@@ -77,21 +78,24 @@ void wxAutoTextCtrl::OnTextChange(wxCommandEvent &event)
 	{
 		wxString strValue = GetValue();
 		wxString strArray;
-		for( size_t i=0; i<m_StrValues.GetCount(); i++ )
+		do 
 		{
-			strArray = m_StrValues[i];
-			if(strArray.Lower().Find(strValue.Lower()) == 0)
+			for( size_t i=0; i<m_StrValues.GetCount(); i++ )
 			{
-				if(strArray.Length() > strValue.Length())
+				strArray = m_StrValues[i];
+				if(strArray.Lower().Find(strValue.Lower()) == 0)
 				{
-					m_nArrayIndex = (int)i;
-					SetValue(strArray);
-					SetSelection((long)strValue.Length(), -1);
+					if(strArray.Length() > strValue.Length())
+					{
+						m_nArrayIndex = (int)i;
+						SetValue(strArray);
+						SetSelection((long)strValue.Length(), -1);
+					}
+					event.Skip(true);
+					return;
 				}
-				event.Skip(true);
-				return;
 			}
-		}
+		} while(GetNewValidInputValues());
 		if(m_bBeep)
 			::wxBell();
 	}
@@ -120,31 +124,37 @@ void wxAutoTextCtrl::OnKeyDown(wxKeyEvent &event)
 		}
 		if (nKeyCode == WXK_DOWN) 
 		{
-			for( size_t i=(m_nArrayIndex+1); i < m_StrValues.GetCount() && m_nArrayIndex >= 0; i++ )
+			do 
 			{
-				strArray = m_StrValues[i];
-				if(strArray.Find(strValue) == 0)
+				for( size_t i=(m_nArrayIndex+1); i < m_StrValues.GetCount() && m_nArrayIndex >= 0; i++ )
 				{
-					m_nArrayIndex = (int)i;
-					SetValue(strArray);
-					SetSelection((long)strValue.Length(), -1);
-					return;
+					strArray = m_StrValues[i];
+					if(strArray.Find(strValue) == 0)
+					{
+						m_nArrayIndex = (int)i;
+						SetValue(strArray);
+						SetSelection((long)strValue.Length(), -1);
+						return;
+					}
 				}
-			}
+			} while(GetNewValidInputValues());
 		}
 		else
 		{
-			for( size_t i=(m_nArrayIndex-1); i >= 0 && m_nArrayIndex > 0 && i < m_StrValues.GetCount(); i-- )
+			do 
 			{
-				strArray = m_StrValues[i];
-				if(strArray.Find(strValue) == 0)
+				for( size_t i=(m_nArrayIndex-1); i >= 0 && m_nArrayIndex > 0 && i < m_StrValues.GetCount(); i-- )
 				{
-					m_nArrayIndex = (int)i;
-					SetValue(strArray);
-					SetSelection((long)strValue.Length(), -1);
-					return;
+					strArray = m_StrValues[i];
+					if(strArray.Find(strValue) == 0)
+					{
+						m_nArrayIndex = (int)i;
+						SetValue(strArray);
+						SetSelection((long)strValue.Length(), -1);
+						return;
+					}
 				}
-			}
+			} while(GetNewValidInputValues());
 		}
 		return;
 	}
@@ -157,14 +167,17 @@ void wxAutoTextCtrl::OnKillFocus(wxFocusEvent &event)
 	if (m_bShowMsg && m_StrValues.GetCount())
 	{
 		wxString strValue = GetValue();
-		for( size_t i=0; i<m_StrValues.GetCount(); i++ )
+		do 
 		{
-			if(strValue == m_StrValues[i])
+			for( size_t i=0; i<m_StrValues.GetCount(); i++ )
 			{
-				event.Skip(true);
-				return;
+				if(strValue == m_StrValues[i])
+				{
+					event.Skip(true);
+					return;
+				}
 			}
-		}
+		} while(GetNewValidInputValues());
 		wxMessageBox(m_strMessage, wxT("Invalid Input"), wxOK | wxCENTRE | wxICON_INFORMATION, this);
 		this->SetFocus();
 		return;
@@ -201,6 +214,16 @@ bool wxAutoTextCtrl::IsShowInvalidInputMessage(void)
 unsigned int wxAutoTextCtrl::AddValidInputValues(wxString strValue)
 {
 	return (unsigned int)m_StrValues.Add(strValue);
+}
+
+void wxAutoTextCtrl::ClearInputValues()
+{
+	m_StrValues.Clear();
+}
+
+bool wxAutoTextCtrl::GetNewValidInputValues()
+{
+	return false;
 }
 
 #endif

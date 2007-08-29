@@ -816,3 +816,25 @@ bool CCommandTextCtrl::OnFilesAndFolderHandler(wxString strExecCommand)
 	}
 	return false;
 }
+
+bool CCommandTextCtrl::GetNewValidInputValues()
+{
+	return false;
+}
+
+void CCommandTextCtrl::GetDirContents(wxString strDir)
+{
+	wxDir dir(strDir);
+	if ( !dir.IsOpened() )
+	{
+		// deal with the error here - wxDir would already log an error message
+		// explaining the exact reason of the failure
+		return;
+	}
+	wxString filename;
+	bool cont = dir.GetFirst(&filename, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+	while ( cont )
+	{
+		cont = dir.GetNext(&filename);
+	}
+}

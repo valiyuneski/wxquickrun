@@ -494,6 +494,7 @@ void COptionsPanel::OnKeysAssignmentButton(wxCommandEvent &event)
 	CKeysAssignDlg keysAssignDlg(this);
 	if(keysAssignDlg.ShowModal()==wxID_OK)
 	{
+		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->InstallHotKeys();
 	}
 	event.Skip(false);
 }

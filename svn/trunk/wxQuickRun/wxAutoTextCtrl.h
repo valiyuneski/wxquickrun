@@ -165,6 +165,18 @@ public:
 	 */
 	unsigned int AddValidInputValues(wxString);
 
+	/**
+	 * Removes all the predefined values set earlier.
+	 * \return
+	 */
+	void ClearInputValues();
+
+	/**
+	 * Gets new predefined values and fill it into the list, if the old values does not match.
+	 * \return Boolean value indicating whether or not new values are filled to the predefined values list.
+	 */
+	virtual bool GetNewValidInputValues();
+
 protected:
 	/**
 	 * Event handler for text change event of the text control.
