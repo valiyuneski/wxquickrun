@@ -218,12 +218,17 @@ void CTasksPanel::OnCategoryChange(wxCommandEvent &event)
 
 void CTasksPanel::OnSize(wxSizeEvent &event)
 {
-	m_pTasksListCtrl->SetColumnWidth(0, (m_pTasksListCtrl->GetClientRect().GetWidth()-180));
-	m_pTasksListCtrl->SetColumnWidth(1, 16);
-	m_pTasksListCtrl->SetColumnWidth(2, 40);
-	m_pTasksListCtrl->SetColumnWidth(3, 16);
-	m_pTasksListCtrl->SetColumnWidth(4, 90);
+	ReSizeListCtrl();
 	event.Skip(true);
+}
+
+void CTasksPanel::ReSizeListCtrl()
+{
+	m_pTasksListCtrl->SetColumnWidth(0, (m_pTasksListCtrl->GetClientRect().GetWidth()-200));
+	m_pTasksListCtrl->SetColumnWidth(1, 26);
+	m_pTasksListCtrl->SetColumnWidth(2, 40);
+	m_pTasksListCtrl->SetColumnWidth(3, 26);
+	m_pTasksListCtrl->SetColumnWidth(4, 90);
 }
 
 void CTasksPanel::FillTasksList(wxString strCategory)
@@ -238,8 +243,6 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 	else
 	{
 		//#define TASK_STATUS_COMPLETED	2
-		wxFont font;
-		font.SetNativeFontInfo(wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif"));
 		wxString sqlCmd = wxString::Format(wxT("SELECT * from tasks WHERE  category = '%s' AND status <> 2;"), strCategory);
 		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
@@ -257,16 +260,12 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 			m_pTasksListCtrl->SetItem(nItem, 4, dueDate.Format(wxT("%d, %B")));
 			if(dueDate.Subtract(wxDateTime::Now()).IsNegative())
 				m_pTasksListCtrl->SetItemTextColour(nItem, *wxRED);
-			m_pTasksListCtrl->SetItemFont(nItem, font);
+			m_pTasksListCtrl->SetItemFont(nItem, m_pTasksListCtrl->GetFont());
 		}
 		result.Finalize();
 		if(m_pTasksListCtrl->GetItemCount() >= 1)
 		{
-			m_pTasksListCtrl->SetColumnWidth(0, (m_pTasksListCtrl->GetClientRect().GetWidth()-180));
-			m_pTasksListCtrl->SetColumnWidth(1, 16);
-			m_pTasksListCtrl->SetColumnWidth(2, 40);
-			m_pTasksListCtrl->SetColumnWidth(3, 16);
-			m_pTasksListCtrl->SetColumnWidth(4, 90);
+			ReSizeListCtrl();
 		}
 	}
 }
@@ -284,15 +283,17 @@ void CTasksPanel::OnItemChecked(wxListEvent &event)
 {
 	if(event.GetItem() >=0 && event.GetItem() < m_pTasksListCtrl->GetItemCount())
 	{
-		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
 		wxString fontinfo;
+		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
 		if(font.IsOk())
-		{
 			fontinfo = font.GetNativeFontInfoDesc(); 
-		}
 		else
 		{
-			fontinfo = wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif");;
+			font = m_pTasksListCtrl->GetFont();
+			if(font.IsOk())
+				fontinfo = font.GetNativeFontInfoDesc();
+			else
+				fontinfo = wxT("0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Shell Dlg 2");
 		}
 		if(font.SetNativeFontInfo(SetFontStrikethrough(fontinfo, true)))
 			m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);
@@ -304,15 +305,17 @@ void CTasksPanel::OnItemUnChecked(wxListEvent &event)
 {
 	if(event.GetItem() >=0 && event.GetItem() < m_pTasksListCtrl->GetItemCount())
 	{
-		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
 		wxString fontinfo; 
+		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
 		if(font.IsOk())
-		{
 			fontinfo = font.GetNativeFontInfoDesc(); 
-		}
 		else
 		{
-			fontinfo = wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif");
+			font = m_pTasksListCtrl->GetFont();
+			if(font.IsOk())
+				fontinfo = font.GetNativeFontInfoDesc();
+			else
+				fontinfo = wxT("0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Shell Dlg 2");
 		}
 		if(font.SetNativeFontInfo(SetFontStrikethrough(fontinfo, false)))
 			m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);

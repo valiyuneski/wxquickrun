@@ -56,6 +56,7 @@ protected:
 	void FillTasksCategory(void);
 	void MarkCheckedAsComplete(void);
 	wxString SetFontStrikethrough(wxString strFontDesc, bool bStrike = true);
+	void ReSizeListCtrl();
 
 private:
 	enum

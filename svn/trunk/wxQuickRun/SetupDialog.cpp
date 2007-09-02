@@ -59,10 +59,10 @@ CSetupDialog::~CSetupDialog(void)
 
 void CSetupDialog::OnClose(wxCloseEvent &event)
 {
-	for(int i=0; i < m_pFlatNotebook->GetPageCount(); i++)
-	{
-		m_pFlatNotebook->GetPage(i)->Close();
-	}
+ 	for(int i=0; i < m_pFlatNotebook->GetPageCount(); i++)
+ 	{
+ 		m_pFlatNotebook->GetPage(i)->Close();
+ 	}
 	m_pFlatNotebook->Close();
 	event.Skip(true);
 }
@@ -71,7 +71,7 @@ void CSetupDialog::CreateGUIControls()
 {
 	///Sizer for adding the controls created by users
 	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
-	m_pFlatNotebook = new wxFlatNotebook(this, wxID_NOTEBOOK_FLAT, wxDefaultPosition, wxDefaultSize, wxFNB_TABS_BORDER_SIMPLE | wxFNB_NO_X_BUTTON | wxFNB_NO_NAV_BUTTONS | wxFNB_NODRAG);
+	m_pFlatNotebook = new wxFlatNotebook(this, wxID_NOTEBOOK_FLAT, wxDefaultPosition, wxDefaultSize);//, wxFNB_TABS_BORDER_SIMPLE | wxFNB_NO_X_BUTTON | wxFNB_NO_NAV_BUTTONS | wxFNB_NODRAG);
 	CKeywordsListPanel *pKeywordsPanel = new CKeywordsListPanel(m_pFlatNotebook, wxID_PANEL_KEYWORDS);
 	CTasksPanel *pTasksPanel = new CTasksPanel(m_pFlatNotebook, wxID_PANEL_TASKS);
 	CContactsPanel *pContactsPanel = new CContactsPanel(m_pFlatNotebook, wxID_PANEL_CONTACTS);
