@@ -92,6 +92,7 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 : wxAutoTextCtrl(parent, id, value, pos, size, style, validator, name)
 , m_pTimer(NULL)
 , m_bMove(false)
+, m_bIsFolder(false)
 {
 	m_mapSmartProgrammer["sf"] = "http://sourceforge.net/search/?type_of_search=soft&words=$word";
 	m_mapSmartProgrammer["cpp"] = "http://www.google.com/search?q=$word&sitesearch=www.cppreference.com&btnG=Search";
@@ -109,9 +110,9 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 	m_mapSmartProgrammer["wiki"] = "http://en.wikipedia.org/wiki/$word";
 	m_mapSmartProgrammer["google"] = "http://www.google.com/search?q=$word&client=wxQuickRun";
 	SetBeepOnInvalidValue(false);
-	m_pTimer = new wxTimer(this, wxID_TIMER);
-	m_pTimer->Start(m_nTimerInterval, wxTIMER_CONTINUOUS);
-	ShowTime();
+	//m_pTimer = new wxTimer(this, wxID_TIMER);
+	//m_pTimer->Start(m_nTimerInterval, wxTIMER_CONTINUOUS);
+	//ShowTime();
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(dbConn->TableExists(wxT("Commands")))
 	{
@@ -206,9 +207,9 @@ CCommandTextCtrl::CCommandTextCtrl(wxWindow* parent, wxWindowID id, const wxStri
 CCommandTextCtrl::~CCommandTextCtrl(void)
 {
 	m_pCommandTextCtrl = NULL;
-	m_pTimer->Stop();
-	delete m_pTimer;
-	m_pTimer = NULL;
+	//m_pTimer->Stop();
+	//delete m_pTimer;
+	//m_pTimer = NULL;
 }
 
 void CCommandTextCtrl::ExecuteCommand(wxString strExecCommand)
@@ -469,6 +470,7 @@ void CCommandTextCtrl::OnKillFocus(wxFocusEvent &event)
 {
 	//ShowTime();
 	((CQuickRunFrame *)GetParent())->ShowTaskIcon(true);
+	ClearInputValues();
 	m_bMove = false;
 	event.Skip(true);
 }
@@ -819,10 +821,56 @@ bool CCommandTextCtrl::OnFilesAndFolderHandler(wxString strExecCommand)
 
 bool CCommandTextCtrl::GetNewValidInputValues()
 {
+	wxString strInput = GetValue();
+	/// This will check whether the input is a folder or not.
+	if (strInput.Find(wxFileName::GetPathSeparator(), true) > 0)
+	{
+		strInput = strInput.Left(strInput.Find(wxFileName::GetPathSeparator()+1, true));
+		wxFileName fileName(strInput);
+		/// If input is a folder, fill the directory contents as valid values.
+		if(fileName.IsDir())
+		{
+			/// Either of the two conditions should be true
+			/// The last valid input values were from commands table
+			/// Or the last folder is not the same as the current folder
+			if(!m_bIsFolder || m_strLastFolder != strInput)
+			{
+				/// Set the last folder contents values as the current one
+				m_strLastFolder = strInput;
+				FillValidValuesWithDirContents(strInput);
+				/// Set that the valid values filled is for a folder.
+				m_bIsFolder = true;
+				return true;
+			}
+			/// Return false means no change in the valid input list,
+			/// and break the do_while loop for checking valid input values.
+			return false;
+		}
+	}
+	/// If the last valid input values were for folder, and the current input is not a folder
+	/// Fill the valid input values from the commands table.
+	if(m_bIsFolder || strInput.IsEmpty())
+	{
+		DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+		if(dbConn->TableExists(wxT("Commands")))
+		{
+			wxString sqlCmd = wxString::Format(wxT("select keyword from Commands"));
+			wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
+			/// Clear the previous values before filling the new values
+			ClearInputValues();
+			while(result.NextRow())
+			{
+				AddValidInputValues(result.GetString(0));
+			}
+			result.Finalize();
+			m_bIsFolder = false;
+			return true;
+		}
+	}
 	return false;
 }
 
-void CCommandTextCtrl::GetDirContents(wxString strDir)
+void CCommandTextCtrl::FillValidValuesWithDirContents(wxString strDir)
 {
 	wxDir dir(strDir);
 	if ( !dir.IsOpened() )
@@ -832,9 +880,14 @@ void CCommandTextCtrl::GetDirContents(wxString strDir)
 		return;
 	}
 	wxString filename;
+	/// Clear the previous values before filling the new values
+	ClearInputValues();
 	bool cont = dir.GetFirst(&filename, wxEmptyString, wxDIR_FILES | wxDIR_DIRS);
+	if(!filename.IsEmpty())
+		AddValidInputValues(strDir + filename);
 	while ( cont )
 	{
 		cont = dir.GetNext(&filename);
+		AddValidInputValues(strDir + filename);
 	}
 }

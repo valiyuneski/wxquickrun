@@ -491,11 +491,12 @@ void COptionsPanel::OnSearchEngineButton(wxCommandEvent &event)
 
 void COptionsPanel::OnKeysAssignmentButton(wxCommandEvent &event)
 {
+	((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->DeInstallHotKeys();
 	CKeysAssignDlg keysAssignDlg(this);
 	if(keysAssignDlg.ShowModal()==wxID_OK)
 	{
-		((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->InstallHotKeys();
 	}
+	((CQuickRunFrame*)wxGetApp().GetMainFrameWindow())->InstallHotKeys();
 	event.Skip(false);
 }
 

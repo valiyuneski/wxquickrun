@@ -579,3 +579,58 @@ void CKeysAssignDlg::GetCommandHotKey(wxString strKey, int &nVirtualKey, int &nM
 	}
 	result.Finalize();
 }
+
+void CKeysAssignDlg::OnModifierChange(wxWindowID id, int nModifier)
+{
+	switch(id)
+	{
+	case wxID_TEXTCTRL_FOCUS:
+		m_pComboBoxFocus->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_ADDNOTE:
+		m_pComboBoxAddNote->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_PASTE_FWD:
+		m_pComboBoxPasteFwd->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_PASTE_BKWD:
+		m_pComboBoxPasteBkwd->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_CLIP_COPY:
+		m_pComboBoxClipCopy->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_CLIP_PASTE:
+		m_pComboBoxClipPaste->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_PASTE_INC:
+		m_pComboBoxPasteInc->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_PASTE_DEC:
+		m_pComboBoxPasteDec->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_GB_MENU:
+		m_pComboBoxGbMenu->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_COUNT_CHARS:
+		m_pComboBoxCountChars->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_UPPERCASE:
+		m_pComboBoxUpperCase->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_LOWERCASE:
+		m_pComboBoxLowerCase->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_TOGGLE_CASE:
+		m_pComboBoxToogleCase->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_SENTENCE_CASE:
+		m_pComboBoxSentenceCase->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_SPELL_CHECK:
+		m_pComboBoxCheckSpell->SetValue(GetModifierAsString(nModifier));
+		break;
+	case wxID_TEXTCTRL_CALCULATION:
+		m_pComboBoxCalculation->SetValue(GetModifierAsString(nModifier));
+		break;
+	};
+}

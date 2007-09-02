@@ -73,6 +73,7 @@ public:
 	void SetStartTime(wxDateTime);
 	void SetEndTime(wxDateTime);
 	void SetReminderTime(wxDateTime);
+	void SetReminderTask(int);
 	void SetReminder(bool);
 	void SetEditMode(wxString strEditSubject, wxString strEditCategory);
 
@@ -85,10 +86,12 @@ private:
 	void OnButtonReminderDate(wxCommandEvent &event);
 	void OnCheckBoxReminder(wxCommandEvent &event);
 	void OnStatusChange(wxCommandEvent &event);
+	void OnReminderTaskChange(wxCommandEvent& event);
 
 	void ParseDate(wxString strDate, int &nDay, int &nMonth, int &nYear);
 	void ParseTime(wxString strTime, wxString AMPM, int &nHour, int &nMinute);
 	void FillEditInfo(void);
+	int GetReminderTaskID();
 
 public:
 	enum
@@ -117,6 +120,8 @@ public:
 		wxID_COMBOBOX_START_AM_PM,
 		wxID_COMBOBOX_END_AM_PM,
 		wxID_COMBOBOX_REMINDER_AM_PM,
+		wxID_STATIC_TEXT_REMINDER_TASK,
+		wxID_COMBOBOX_REMINDER_TASK,
 		wxID_BUTTON_START_DATE,
 		wxID_BUTTON_END_DATE,
 		wxID_BUTTON_REMINDER_DATE,
@@ -151,6 +156,8 @@ private:
 	wxButton *m_pButtonReminderDate;
 	wxTextCtrl *m_pTextCtrlReminderTime;
 	wxComboBox *m_pComboReminderAMPM;
+	wxStaticText *m_pStaticReminderTask;
+	wxComboBox *m_pComboReminderTask;
 	wxCheckBox *m_pCheckBoxReminder;
 	wxString m_strEditSubject;
 	wxString m_strEditCategory;

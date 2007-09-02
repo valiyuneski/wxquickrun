@@ -28,6 +28,7 @@
  **/
 
 #include "KeyInputCtrl.h"
+#include "KeysAssignDlg.h"
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -57,8 +58,15 @@ CKeyInputCtrl::~CKeyInputCtrl(void)
 void CKeyInputCtrl::OnKeyDown(wxKeyEvent &event)
 {
 	int nKeyCode = event.GetKeyCode();
+	OnKeysModifierChange(event.GetModifiers());
 	SetValue(GetKeyCodeAsString(nKeyCode));
 	event.Skip(true);
+}
+
+void CKeyInputCtrl::OnKeysModifierChange(int nModifier)
+{
+	CKeysAssignDlg *pDlg = static_cast<CKeysAssignDlg *>(GetParent());
+	pDlg->OnModifierChange(GetId(), nModifier);
 }
 
 void CKeyInputCtrl::OnChar(wxKeyEvent &event)

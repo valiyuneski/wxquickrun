@@ -43,6 +43,7 @@ BEGIN_EVENT_TABLE(CAddTaskDialog, wxDialog)
 	EVT_BUTTON(wxID_BUTTON_REMINDER_DATE, CAddTaskDialog::OnButtonReminderDate)
 	EVT_CHECKBOX(wxID_CHECKBOX_REMINDER, CAddTaskDialog::OnCheckBoxReminder)
 	EVT_COMBOBOX(wxID_COMBOBOX_STATUS, CAddTaskDialog::OnStatusChange)
+	EVT_COMBOBOX(wxID_COMBOBOX_REMINDER_TASK, CAddTaskDialog::OnReminderTaskChange)
 	EVT_INIT_DIALOG(CAddTaskDialog::OnInitDialog)
 END_EVENT_TABLE()
 
@@ -74,6 +75,8 @@ CAddTaskDialog::CAddTaskDialog(wxWindow* parent, wxWindowID id, const wxString& 
 , m_pButtonReminderDate(NULL)
 , m_pTextCtrlReminderTime(NULL)
 , m_pComboReminderAMPM(NULL)
+, m_pStaticReminderTask(NULL)
+, m_pComboReminderTask(NULL)
 , m_pCheckBoxReminder(NULL)
 {
 	SetIcon(wxGetApp().GetMainFrameWindow()->GetIcon());
@@ -134,6 +137,19 @@ void CAddTaskDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 		m_pComboCategory = new wxComboBox(this, wxID_COMBOBOX_CATEGORY, arrayCategory.Item(0), wxDefaultPosition, wxDefaultSize, arrayCategory, wxCB_READONLY | wxCB_SORT);
 	else
 		m_pComboCategory = new wxComboBox(this, wxID_COMBOBOX_CATEGORY, wxEmptyString, wxDefaultPosition, wxDefaultSize, arrayCategory, wxCB_READONLY | wxCB_SORT);
+
+	wxArrayString arrayTasks;
+	arrayTasks.Add(wxEmptyString);
+	if(dbConn->TableExists(wxT("Commands")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("select keyword from Commands"));
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
+		while(result.NextRow())
+		{
+			arrayTasks.Add(result.GetString(0));
+		}
+		result.Finalize();
+	}
 
 	wxArrayString arrayStatus;
 	arrayStatus.Add(wxT("Not Started"));
@@ -224,6 +240,14 @@ void CAddTaskDialog::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 	pStaticBoxSizer->Add(pStartDateSizer, 0, wxALL | wxEXPAND, 5);
 	pStaticBoxSizer->Add(pEndDateSizer, 0, wxALL | wxEXPAND, 5);
 	pStaticBoxSizer->Add(pReminderDateSizer, 0, wxALL | wxEXPAND, 5);
+
+	wxBoxSizer *pReminderTaskSizer = new wxBoxSizer(wxHORIZONTAL);
+	m_pStaticReminderTask = new wxStaticText(this, wxID_STATIC_TEXT_REMINDER_TASK, wxT("Tas&k:          "));
+	m_pComboReminderTask = new wxComboBox(this, wxID_COMBOBOX_REMINDER_TASK, wxEmptyString, wxDefaultPosition, wxDefaultSize, arrayTasks, wxCB_READONLY);
+	pReminderTaskSizer->Add(m_pStaticReminderTask, 0, wxLEFT | wxRIGHT | wxEXPAND, 5);
+	pReminderTaskSizer->Add(m_pComboReminderTask, 1, wxRIGHT | wxEXPAND, 5);
+
+	pStaticBoxSizer->Add(pReminderTaskSizer, 0, wxALL | wxEXPAND, 5);
 	pStaticBoxSizer->Add(m_pTextCtrlDescription, 1, wxALL | wxEXPAND, 5);
 
 	wxBoxSizer* pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -270,7 +294,7 @@ void CAddTaskDialog::OnOK(wxCommandEvent &event)
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT, reminderTaskID INTEGER);"));
 	}
 
 	if(m_strEditSubject != GetTaskSubject() || m_strEditCategory != GetCategory())
@@ -294,7 +318,7 @@ void CAddTaskDialog::OnOK(wxCommandEvent &event)
 		dbConn->ExecuteQuery(sqlCmd);
 	}
 
-	wxString sqlCmd = wxString::Format(wxT("Insert INTO tasks('subject', 'category', 'status', 'priority', 'completion', 'startTime', 'endTime', 'reminderTime', 'reminder', 'description') VALUES('%s', '%s', %d, %d, %d, ?, ?, ?, ?, ?)"), GetTaskSubject(), GetCategory(), GetStatus(), GetPriority(), GetPercentCompletion());
+	wxString sqlCmd = wxString::Format(wxT("Insert INTO tasks('subject', 'category', 'status', 'priority', 'completion', 'startTime', 'endTime', 'reminderTime', 'reminder', 'description' , 'reminderTaskID') VALUES('%s', '%s', %d, %d, %d, ?, ?, ?, ?, ?, %d)"), GetTaskSubject(), GetCategory(), GetStatus(), GetPriority(), GetPercentCompletion(), GetReminderTaskID());
 	wxSQLite3Statement stmt = dbConn->PrepareStatement(sqlCmd);
 	// Bind the variables to the SQL statement
 	stmt.BindTimestamp(1, GetStartTime());
@@ -347,22 +371,7 @@ void CAddTaskDialog::OnButtonReminderDate(wxCommandEvent& WXUNUSED(event))
 
 void CAddTaskDialog::OnCheckBoxReminder(wxCommandEvent& WXUNUSED(event))
 {
-	if(m_pCheckBoxReminder->IsChecked())
-	{
-		m_pStaticReminderDate->Enable();
-		m_pTextCtrlReminderDate->Enable();
-		m_pButtonReminderDate->Enable();
-		m_pTextCtrlReminderTime->Enable();
-		m_pComboReminderAMPM->Enable();
-	}
-	else
-	{
-		m_pStaticReminderDate->Disable();
-		m_pTextCtrlReminderDate->Disable();
-		m_pButtonReminderDate->Disable();
-		m_pTextCtrlReminderTime->Disable();
-		m_pComboReminderAMPM->Disable();
-	}
+	SetReminder(m_pCheckBoxReminder->IsChecked());
 }
 
 void CAddTaskDialog::OnStatusChange(wxCommandEvent& WXUNUSED(event))
@@ -617,6 +626,8 @@ void CAddTaskDialog::SetReminder(bool bReminder)
 		m_pButtonReminderDate->Enable();
 		m_pTextCtrlReminderTime->Enable();
 		m_pComboReminderAMPM->Enable();
+		m_pStaticReminderTask->Enable();
+		m_pComboReminderTask->Enable();
 	}
 	else
 	{
@@ -625,6 +636,8 @@ void CAddTaskDialog::SetReminder(bool bReminder)
 		m_pButtonReminderDate->Disable();
 		m_pTextCtrlReminderTime->Disable();
 		m_pComboReminderAMPM->Disable();
+		m_pStaticReminderTask->Disable();
+		m_pComboReminderTask->Disable();
 	}
 }
 
@@ -641,7 +654,7 @@ void CAddTaskDialog::FillEditInfo(void)
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT, reminderTaskID INTEGER);"));
 	}
 	else
 	{
@@ -657,6 +670,44 @@ void CAddTaskDialog::FillEditInfo(void)
 			SetReminderTime(result.GetDateTime(8));
 			SetReminder(result.GetBool(9));
 			SetTaskDetail(result.GetString(10));
+			SetReminderTask(result.GetInt(11));
+		}
+		result.Finalize();
+	}
+}
+
+void CAddTaskDialog::OnReminderTaskChange(wxCommandEvent& WXUNUSED(event))
+{
+}
+
+int CAddTaskDialog::GetReminderTaskID()
+{
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("select ID from Commands WHERE keyword = '%s'"), m_pComboReminderTask->GetValue());
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
+		int nCommnadID = 0;
+		if(result.NextRow())
+		{
+			nCommnadID = result.GetInt(0);
+		}
+		result.Finalize();
+		return nCommnadID;
+	}
+	return 0;
+}
+
+void CAddTaskDialog::SetReminderTask(int nCommandID)
+{
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("Commands")))
+	{
+		wxString sqlCmd = wxString::Format(wxT("select keyword from Commands WHERE ID = %d"), nCommandID);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
+		if(result.NextRow())
+		{
+			m_pComboReminderTask->SetValue(result.GetString(0));
 		}
 		result.Finalize();
 	}

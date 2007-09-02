@@ -59,6 +59,10 @@ CSetupDialog::~CSetupDialog(void)
 
 void CSetupDialog::OnClose(wxCloseEvent &event)
 {
+	for(int i=0; i < m_pFlatNotebook->GetPageCount(); i++)
+	{
+		m_pFlatNotebook->GetPage(i)->Close();
+	}
 	m_pFlatNotebook->Close();
 	event.Skip(true);
 }

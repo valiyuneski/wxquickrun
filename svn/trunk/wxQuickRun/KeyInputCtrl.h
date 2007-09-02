@@ -38,6 +38,7 @@ public:
 	CKeyInputCtrl();
 	CKeyInputCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxT(""), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxT("text control"));
 	virtual ~CKeyInputCtrl(void);
+	virtual void OnKeysModifierChange(int);
 
 private:
 	int GetKeyCode(wxString ch);

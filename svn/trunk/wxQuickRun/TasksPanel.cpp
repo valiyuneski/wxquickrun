@@ -233,11 +233,13 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT, reminderTaskID INTEGER);"));
 	}
 	else
 	{
 		//#define TASK_STATUS_COMPLETED	2
+		wxFont font;
+		font.SetNativeFontInfo(wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif"));
 		wxString sqlCmd = wxString::Format(wxT("SELECT * from tasks WHERE  category = '%s' AND status <> 2;"), strCategory);
 		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
 		while(result.NextRow())
@@ -255,6 +257,7 @@ void CTasksPanel::FillTasksList(wxString strCategory)
 			m_pTasksListCtrl->SetItem(nItem, 4, dueDate.Format(wxT("%d, %B")));
 			if(dueDate.Subtract(wxDateTime::Now()).IsNegative())
 				m_pTasksListCtrl->SetItemTextColour(nItem, *wxRED);
+			m_pTasksListCtrl->SetItemFont(nItem, font);
 		}
 		result.Finalize();
 		if(m_pTasksListCtrl->GetItemCount() >= 1)
@@ -282,8 +285,17 @@ void CTasksPanel::OnItemChecked(wxListEvent &event)
 	if(event.GetItem() >=0 && event.GetItem() < m_pTasksListCtrl->GetItemCount())
 	{
 		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
-		//font.SetStrikethrough(true);
-		m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);
+		wxString fontinfo;
+		if(font.IsOk())
+		{
+			fontinfo = font.GetNativeFontInfoDesc(); 
+		}
+		else
+		{
+			fontinfo = wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif");;
+		}
+		if(font.SetNativeFontInfo(SetFontStrikethrough(fontinfo, true)))
+			m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);
 	}
 	event.Skip(false);
 }
@@ -293,8 +305,17 @@ void CTasksPanel::OnItemUnChecked(wxListEvent &event)
 	if(event.GetItem() >=0 && event.GetItem() < m_pTasksListCtrl->GetItemCount())
 	{
 		wxFont font = m_pTasksListCtrl->GetItemFont(event.GetIndex());
-		//font.SetStrikethrough(false);
-		m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);
+		wxString fontinfo; 
+		if(font.IsOk())
+		{
+			fontinfo = font.GetNativeFontInfoDesc(); 
+		}
+		else
+		{
+			fontinfo = wxT("0;14;0;0;0;400;0;0;0;1;0;0;0;32;Microsoft Sans Serif");
+		}
+		if(font.SetNativeFontInfo(SetFontStrikethrough(fontinfo, false)))
+			m_pTasksListCtrl->SetItemFont(event.GetIndex(), font);
 	}
 	event.Skip(false);
 }
@@ -356,7 +377,7 @@ wxString CTasksPanel::SetFontStrikethrough(wxString strFontDesc, bool bStrike)
 	{
 		wxString strParse = strFontDesc.Left(strFontDesc.Find(wxT(';')));
 		strFontDesc = strFontDesc.Right(strFontDesc.Length()-strFontDesc.Find(wxT(';'))-1);
-		if(nCount == 9)
+		if(nCount == 8)
 		{
 			if(bStrike)
 				strFont = strFont + wxT("1;");

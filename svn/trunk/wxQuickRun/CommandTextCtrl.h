@@ -87,7 +87,7 @@ private:
 	bool OnHttpURLHandler(wxString strExecCommand);
 	bool OnFilesAndFolderHandler(wxString strExecCommand);
 	bool GetNewValidInputValues();
-	void GetDirContents(wxString strDir);
+	void FillValidValuesWithDirContents(wxString strDir);
 
 public:
 	enum
@@ -112,6 +112,8 @@ private:
 	static CCommandTextCtrl *m_pCommandTextCtrl;
 	bool m_bMove;
 	wxString m_strLastCommand;
+	bool m_bIsFolder;
+	wxString m_strLastFolder;
 
 public:
 	static const int m_nTimerInterval = 60000;	// 60 thousand milliseconds or 1 minute

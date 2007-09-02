@@ -42,6 +42,7 @@ public:
 	void RegisterHotKeyCommand(int hotkeyID, int nKeyCode, int modifiers);
 	void RegisterHotKey(int hotkeyID);
 	void InstallHotKeys();
+	void DeInstallHotKeys();
 	void EnableVirtualClipboard(bool bEnable);
 	void SetReminderTimer();
 

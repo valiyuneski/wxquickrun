@@ -232,39 +232,8 @@ void CQuickRunFrame::InstallHotKeys()
 	result.Finalize();
 }
 
-CQuickRunFrame::~CQuickRunFrame(void)
+void CQuickRunFrame::DeInstallHotKeys()
 {
-}
-
-void CQuickRunFrame::CreateGUIControls(void)
-{
-	SetIcon(wxICON(IDI_ICON_APPICON));
-
-	/// Sizer for adding the controls created by users
-	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
-	m_pTextCtrl = new CCommandTextCtrl(this, wxID_TEXTCTRL_COMMAND, wxEmptyString, wxPoint(0, 0));
-	pMainSizer->Add(m_pTextCtrl, 1, wxEXPAND | wxALIGN_CENTER, 0);
-	SetSizer(pMainSizer);
-	SetAutoLayout (true);
-	Layout();
-
-	m_pTaskBarIcon = new CTaskBarIcon(this);
-}
-
-void CQuickRunFrame::OnClose(wxCloseEvent& event)
-{
-	if(m_bShowTaskBar)
-	{
-		m_pTaskBarIcon->RemoveIcon();
-		m_bShowTaskBar = false;
-	}
-
-	if(m_pReminderTimer)
-	{
-		m_pReminderTimer->Stop();
-		delete m_pReminderTimer;
-	}
-
 	wxWindow::UnregisterHotKey(wxID_HOTKEY_BRING_FOCUS);
 	wxWindow::UnregisterHotKey(wxID_HOTKEY_ADD_NOTE);
 	wxWindow::UnregisterHotKey(wxID_HOTKEY_INC_PASTE);
@@ -303,6 +272,42 @@ void CQuickRunFrame::OnClose(wxCloseEvent& event)
 		wxWindow::UnregisterHotKey(wxID_HOTKEY_PASTE_8);
 		wxWindow::UnregisterHotKey(wxID_HOTKEY_PASTE_9);
 	}
+}
+
+CQuickRunFrame::~CQuickRunFrame(void)
+{
+}
+
+void CQuickRunFrame::CreateGUIControls(void)
+{
+	SetIcon(wxICON(IDI_ICON_APPICON));
+
+	/// Sizer for adding the controls created by users
+	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
+	m_pTextCtrl = new CCommandTextCtrl(this, wxID_TEXTCTRL_COMMAND, wxEmptyString, wxPoint(0, 0));
+	pMainSizer->Add(m_pTextCtrl, 1, wxEXPAND | wxALIGN_CENTER, 0);
+	SetSizer(pMainSizer);
+	SetAutoLayout (true);
+	Layout();
+
+	m_pTaskBarIcon = new CTaskBarIcon(this);
+}
+
+void CQuickRunFrame::OnClose(wxCloseEvent& event)
+{
+	if(m_bShowTaskBar)
+	{
+		m_pTaskBarIcon->RemoveIcon();
+		m_bShowTaskBar = false;
+	}
+
+	if(m_pReminderTimer)
+	{
+		m_pReminderTimer->Stop();
+		delete m_pReminderTimer;
+	}
+
+	DeInstallHotKeys();
 
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("settings")))
@@ -947,10 +952,29 @@ void CQuickRunFrame::OnMenuSearchEngine(wxCommandEvent &event)
 
 void CQuickRunFrame::OnReminderTimer(wxTimerEvent& WXUNUSED(event))
 {
-	CReminderDialog remDlg(this);
-	remDlg.SetTaskID(m_nTaskReminderID);
-	if(remDlg.ShowModal()==wxID_OK)
+	int nReminderTaskID = 0;
+	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
+	if(dbConn->TableExists(wxT("tasks")))
 	{
+		wxString sqlCmd = wxString::Format(wxT("select reminderTaskID from tasks WHERE ID = %d"), m_nTaskReminderID);
+		wxSQLite3ResultSet result = dbConn->ExecuteQuery(sqlCmd);
+		if(result.NextRow())
+		{
+			nReminderTaskID = result.GetInt(0);
+		}
+		result.Finalize();
+	}
+	if (nReminderTaskID != 0)
+	{
+		CCommandTextCtrl::GetInstance()->OnExecuteKeywords(nReminderTaskID);
+	}
+	else
+	{
+		CReminderDialog remDlg(this);
+		remDlg.SetTaskID(m_nTaskReminderID);
+		if(remDlg.ShowModal()==wxID_OK)
+		{
+		}
 	}
 	SetReminderTimer();
 }
@@ -960,7 +984,7 @@ void CQuickRunFrame::SetReminderTimer()
 	DBConnPtr dbConn = CDBConnectionMgr::GetDBConnection();
 	if(!dbConn->TableExists(wxT("tasks")))
 	{
-		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT);"));
+		dbConn->ExecuteUpdate(wxT("create table tasks(ID INTEGER PRIMARY KEY AUTOINCREMENT, subject VARCHAR(255), category VARCHAR(64), status NUMERIC(1,0), priority NUMERIC(1,0), completion NUMERIC(3,0), startTime TIMESTAMP, endTime TIMESTAMP, reminderTime TIMESTAMP, reminder BOOLEAN, description TEXT, reminderTaskID INTEGER);"));
 	}
 	else
 	{

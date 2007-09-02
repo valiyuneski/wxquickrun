@@ -33,61 +33,12 @@
 
 class CKeysAssignDlg : public wxDialog
 {
-private:
-	wxStaticText *m_pStaticTextFocus;
-	CKeyInputCtrl *m_pTextCtrlFocus;
-	wxComboBox *m_pComboBoxFocus;
-	wxStaticText *m_pStaticTextAddNote;
-	CKeyInputCtrl *m_pTextCtrlAddNote;
-	wxComboBox *m_pComboBoxAddNote;
-	wxStaticText *m_pStaticTextPasteFwd;
-	CKeyInputCtrl *m_pTextCtrlPasteFwd;
-	wxComboBox *m_pComboBoxPasteFwd;
-	wxStaticText *m_pStaticTextPasteBkwd;
-	CKeyInputCtrl *m_pTextCtrlPasteBkwd;
-	wxComboBox *m_pComboBoxPasteBkwd;
-	wxStaticText *m_pStaticTextClipCopy;
-	CKeyInputCtrl *m_pTextCtrlClipCopy;
-	wxComboBox *m_pComboBoxClipCopy;
-	wxStaticText *m_pStaticTextClipPaste;
-	CKeyInputCtrl *m_pTextCtrlClipPaste;
-	wxComboBox *m_pComboBoxClipPaste;
-	wxStaticText *m_pStaticTextPasteInc;
-	CKeyInputCtrl *m_pTextCtrlPasteInc;
-	wxComboBox *m_pComboBoxPasteInc;
-	wxStaticText *m_pStaticTextPasteDec;
-	CKeyInputCtrl *m_pTextCtrlPasteDec;
-	wxComboBox *m_pComboBoxPasteDec;
-	wxStaticText *m_pStaticTextGbMenu;
-	CKeyInputCtrl *m_pTextCtrlGbMenu;
-	wxComboBox *m_pComboBoxGbMenu;
-	wxStaticText *m_pStaticTextCountChars;
-	CKeyInputCtrl *m_pTextCtrlCountChars;
-	wxComboBox *m_pComboBoxCountChars;
-	wxStaticText *m_pStaticTextUpperCase;
-	CKeyInputCtrl *m_pTextCtrlUpperCase;
-	wxComboBox *m_pComboBoxUpperCase;
-	wxStaticText *m_pStaticTextLowerCase;
-	CKeyInputCtrl *m_pTextCtrlLowerCase;
-	wxComboBox *m_pComboBoxLowerCase;
-	wxStaticText *m_pStaticTextToogleCase;
-	CKeyInputCtrl *m_pTextCtrlToogleCase;
-	wxComboBox *m_pComboBoxToogleCase;
-	wxStaticText *m_pStaticTextSentenceCase;
-	CKeyInputCtrl *m_pTextCtrlSentenceCase;
-	wxComboBox *m_pComboBoxSentenceCase;
-	wxStaticText *m_pStaticTextCheckSpell;
-	CKeyInputCtrl *m_pTextCtrlCheckSpell;
-	wxComboBox *m_pComboBoxCheckSpell;
-	wxStaticText *m_pStaticTextCalculation;
-	CKeyInputCtrl *m_pTextCtrlCalculation;
-	wxComboBox *m_pComboBoxCalculation;
-
 public:
 	CKeysAssignDlg(wxWindow* parent, wxWindowID id = CKeysAssignDlg::wxID_DIALOG_KEYS_ASSIGN, const wxString& title = wxT("wxQuickRun"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, const wxString& name = wxT("dialogBox"));
 	virtual ~CKeysAssignDlg(void);
 	static void AssignDefaultHotKey(void);
 	static void GetCommandHotKey(wxString strKey, int &nVirtualKey, int &nModifier);
+	void OnModifierChange(wxWindowID id, int nModifier);
 
 private:
 	void OnClose(wxCloseEvent &event);
@@ -154,6 +105,56 @@ public:
 		wxID_COMBOBOX_SPELL_CHECK,
 		wxID_COMBOBOX_CALCULATION
 	};
+
+private:
+	wxStaticText *m_pStaticTextFocus;
+	CKeyInputCtrl *m_pTextCtrlFocus;
+	wxComboBox *m_pComboBoxFocus;
+	wxStaticText *m_pStaticTextAddNote;
+	CKeyInputCtrl *m_pTextCtrlAddNote;
+	wxComboBox *m_pComboBoxAddNote;
+	wxStaticText *m_pStaticTextPasteFwd;
+	CKeyInputCtrl *m_pTextCtrlPasteFwd;
+	wxComboBox *m_pComboBoxPasteFwd;
+	wxStaticText *m_pStaticTextPasteBkwd;
+	CKeyInputCtrl *m_pTextCtrlPasteBkwd;
+	wxComboBox *m_pComboBoxPasteBkwd;
+	wxStaticText *m_pStaticTextClipCopy;
+	CKeyInputCtrl *m_pTextCtrlClipCopy;
+	wxComboBox *m_pComboBoxClipCopy;
+	wxStaticText *m_pStaticTextClipPaste;
+	CKeyInputCtrl *m_pTextCtrlClipPaste;
+	wxComboBox *m_pComboBoxClipPaste;
+	wxStaticText *m_pStaticTextPasteInc;
+	CKeyInputCtrl *m_pTextCtrlPasteInc;
+	wxComboBox *m_pComboBoxPasteInc;
+	wxStaticText *m_pStaticTextPasteDec;
+	CKeyInputCtrl *m_pTextCtrlPasteDec;
+	wxComboBox *m_pComboBoxPasteDec;
+	wxStaticText *m_pStaticTextGbMenu;
+	CKeyInputCtrl *m_pTextCtrlGbMenu;
+	wxComboBox *m_pComboBoxGbMenu;
+	wxStaticText *m_pStaticTextCountChars;
+	CKeyInputCtrl *m_pTextCtrlCountChars;
+	wxComboBox *m_pComboBoxCountChars;
+	wxStaticText *m_pStaticTextUpperCase;
+	CKeyInputCtrl *m_pTextCtrlUpperCase;
+	wxComboBox *m_pComboBoxUpperCase;
+	wxStaticText *m_pStaticTextLowerCase;
+	CKeyInputCtrl *m_pTextCtrlLowerCase;
+	wxComboBox *m_pComboBoxLowerCase;
+	wxStaticText *m_pStaticTextToogleCase;
+	CKeyInputCtrl *m_pTextCtrlToogleCase;
+	wxComboBox *m_pComboBoxToogleCase;
+	wxStaticText *m_pStaticTextSentenceCase;
+	CKeyInputCtrl *m_pTextCtrlSentenceCase;
+	wxComboBox *m_pComboBoxSentenceCase;
+	wxStaticText *m_pStaticTextCheckSpell;
+	CKeyInputCtrl *m_pTextCtrlCheckSpell;
+	wxComboBox *m_pComboBoxCheckSpell;
+	wxStaticText *m_pStaticTextCalculation;
+	CKeyInputCtrl *m_pTextCtrlCalculation;
+	wxComboBox *m_pComboBoxCalculation;
 
 private:
 	// Any class wishing to process wxWindows events must use this macro
