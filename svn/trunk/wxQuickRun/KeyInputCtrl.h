@@ -29,6 +29,7 @@
 
 #pragma once
 #include "stdwx.h"
+#include <wx/combobox.h>
 
 class CKeyInputCtrl : public wxTextCtrl
 {
@@ -39,6 +40,8 @@ public:
 	CKeyInputCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxT(""), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxT("text control"));
 	virtual ~CKeyInputCtrl(void);
 	virtual void OnKeysModifierChange(int);
+	void SetModifierComboBox(wxComboBox *pComboBox);
+	static wxString GetModifierAsString(int nModifier);
 
 private:
 	int GetKeyCode(wxString ch);
@@ -49,6 +52,9 @@ private:
 public:
 	int GetKeyCode();
 	void SetKeyCode(int nKeyCode);
+
+private:
+	wxComboBox *m_pComboBoxModiifer;
 
 private:
 	// Any class wishing to process wxWindows events must use this macro

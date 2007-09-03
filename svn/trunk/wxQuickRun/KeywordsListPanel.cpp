@@ -32,7 +32,9 @@
 #include "OptionsPanel.h"
 #include "ExtractIcon.h"
 #include "wxQuickRun.h"
+#include "TextDropHandler.h"
 #include <wx/stdpaths.h>
+#include <wx/filename.h>
 #include <wx/icon.h>
 
 #ifdef __WXDEBUG__
@@ -46,6 +48,7 @@ BEGIN_EVENT_TABLE(CKeywordsListPanel, wxPanel)
 	EVT_BUTTON(wxID_BUTTON_KEYWORD_DELETE, CKeywordsListPanel::OnDeleteKeyword)
 	EVT_BUTTON(wxID_BUTTON_KEYWORD_IMPORT, CKeywordsListPanel::OnImportKeyword)
 	EVT_BUTTON(wxID_BUTTON_KEYWORD_EXPORT, CKeywordsListPanel::OnExportKeyword)
+	EVT_DROP_FILES(CKeywordsListPanel::OnDropFiles)
 END_EVENT_TABLE()
 
 CKeywordsListPanel::CKeywordsListPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
@@ -104,6 +107,8 @@ void CKeywordsListPanel::CreateGUIControls()
 	m_pButtonImport->Disable();
 	m_pButtonExport->Disable();
 	m_pKeywordsListCtrl->SetImageList(&m_imageList, wxIMAGE_LIST_SMALL);
+	wxWindow::DragAcceptFiles(true);
+	SetDropTarget(new CTextDropTarget<CKeywordsListPanel>(this, &CKeywordsListPanel::OnDropText));
 }
 
 void CKeywordsListPanel::FillKeywordsList()
@@ -207,4 +212,38 @@ void CKeywordsListPanel::OnImportKeyword(wxCommandEvent &event)
 void CKeywordsListPanel::OnExportKeyword(wxCommandEvent &event)
 {
 	event.Skip(false);
+}
+
+void CKeywordsListPanel::OnDropFiles(wxDropFilesEvent &event)
+{
+	/// Don't handle multiple file drops
+	if(event.GetNumberOfFiles() == 1)
+	{
+		wxString strFileName = ((wxString *)event.GetFiles())[0];
+		CAddKeywordDialog addKeyDlg(this, CAddKeywordDialog::wxID_DIALOG_ADD_KEYWORD);
+		addKeyDlg.SetFileName(strFileName);
+		if(addKeyDlg.ShowModal()==wxID_OK)
+			FillKeywordsList();
+	}
+}
+
+bool CKeywordsListPanel::OnDropText(wxCoord x, wxCoord y, const wxString& data)
+{
+	wxFileName fileName(data);
+	wxString strLink = data.Lower();
+	if(fileName.DirExists() || fileName.FileExists())
+	{
+		CAddKeywordDialog addKeyDlg(this, CAddKeywordDialog::wxID_DIALOG_ADD_KEYWORD);
+		addKeyDlg.SetFileName(data);
+		if(addKeyDlg.ShowModal()==wxID_OK)
+			FillKeywordsList();
+	}
+	else if(strLink.Find(wxT("http://")) == 0 || strLink.Find(wxT("www.")) == 0)
+	{
+		CAddKeywordDialog addKeyDlg(this, CAddKeywordDialog::wxID_DIALOG_ADD_KEYWORD);
+		addKeyDlg.SetLinkName(data);
+		if(addKeyDlg.ShowModal()==wxID_OK)
+			FillKeywordsList();
+	}
+	return true;
 }

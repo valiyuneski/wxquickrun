@@ -38,7 +38,6 @@ public:
 	virtual ~CKeysAssignDlg(void);
 	static void AssignDefaultHotKey(void);
 	static void GetCommandHotKey(wxString strKey, int &nVirtualKey, int &nModifier);
-	void OnModifierChange(wxWindowID id, int nModifier);
 
 private:
 	void OnClose(wxCloseEvent &event);
@@ -47,7 +46,6 @@ private:
 	void GetKeyBindingsFromDB(void);
 	void SaveKeyBindingsToDB(void);
 	int GetModifier(wxString strModifier);
-	wxString GetModifierAsString(int nModifier);
 	static void SaveRowToDB(wxString strKey, int nModifier, int nVirtualCode);
 	bool CheckForDuplicateKeyBindings(void);
 	void InitControlFromDB(wxString strKey, int nModifier, int nVirtualCode);

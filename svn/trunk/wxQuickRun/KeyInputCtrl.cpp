@@ -28,7 +28,6 @@
  **/
 
 #include "KeyInputCtrl.h"
-#include "KeysAssignDlg.h"
 
 #ifdef __WXDEBUG__
 #define new WXDEBUG_NEW
@@ -43,11 +42,13 @@ END_EVENT_TABLE()
 
 CKeyInputCtrl::CKeyInputCtrl()
 : wxTextCtrl(NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize)
+, m_pComboBoxModiifer(NULL)
 {
 }
 
 CKeyInputCtrl::CKeyInputCtrl(wxWindow* parent, wxWindowID id, const wxString& value, const wxPoint& pos, const wxSize& size, long style, const wxValidator& validator, const wxString& name)
 : wxTextCtrl(parent, id, value, pos, size, style, validator, name)
+, m_pComboBoxModiifer(NULL)
 {
 }
 
@@ -63,10 +64,42 @@ void CKeyInputCtrl::OnKeyDown(wxKeyEvent &event)
 	event.Skip(true);
 }
 
+void CKeyInputCtrl::SetModifierComboBox(wxComboBox *pComboBox)
+{
+	m_pComboBoxModiifer = pComboBox;
+}
+
 void CKeyInputCtrl::OnKeysModifierChange(int nModifier)
 {
-	CKeysAssignDlg *pDlg = static_cast<CKeysAssignDlg *>(GetParent());
-	pDlg->OnModifierChange(GetId(), nModifier);
+	if(m_pComboBoxModiifer)
+		m_pComboBoxModiifer->SetValue(GetModifierAsString(nModifier));
+}
+
+wxString CKeyInputCtrl::GetModifierAsString(int nModifier)
+{
+	if(nModifier == int(wxMOD_SHIFT))
+		return wxT("SHIFT");
+	else if(nModifier == int(wxMOD_CONTROL))
+		return wxT("CTRL");
+	else if(nModifier == int(wxMOD_ALT))
+		return wxT("ALT");
+	else if(nModifier == int(wxMOD_SHIFT|wxMOD_WIN))
+		return wxT("SHIFT|WIN");
+	else if(nModifier == int(wxMOD_CONTROL|wxMOD_WIN))
+		return wxT("CTRL|WIN");
+	else if(nModifier == int(wxMOD_ALT|wxMOD_WIN))
+		return wxT("ALT|WIN");
+	else if(nModifier == int(wxMOD_ALT|wxMOD_SHIFT))
+		return wxT("ALT|SHIFT");
+	else if(nModifier == int(wxMOD_ALT|wxMOD_CONTROL))
+		return wxT("ALT|CTRL");
+	else if(nModifier == int(wxMOD_SHIFT|wxMOD_CONTROL))
+		return wxT("SHIFT|CTRL");
+	else if(nModifier == int(wxMOD_ALT|wxMOD_SHIFT|wxMOD_CONTROL))
+		return wxT("ALT|SHIFT|CTRL");
+	else if(nModifier == int(wxMOD_CONTROL|wxMOD_ALT|wxMOD_WIN))
+		return wxT("CTRL|ALT|WIN");
+	return wxT("");
 }
 
 void CKeyInputCtrl::OnChar(wxKeyEvent &event)

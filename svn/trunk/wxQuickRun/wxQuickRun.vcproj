@@ -605,6 +605,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TextDropHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ToggleBitmapButton.h"
 				>
 			</File>

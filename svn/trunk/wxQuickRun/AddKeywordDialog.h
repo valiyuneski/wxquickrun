@@ -29,34 +29,32 @@
 
 #pragma once
 #include "stdwx.h"
+#include "KeyInputCtrl.h"
+#include <wx/combobox.h>
 
 class CAddKeywordDialog : public wxDialog
 {
-private:
-	wxStaticText *m_pStaticKeyword;
-	wxStaticText *m_pStaticExecFile;
-	wxStaticText *m_pStaticParameters;
-	wxStaticText *m_pStaticStartUpPath;
-	wxStaticText *m_pStaticNotes;
-	wxTextCtrl *m_pTextCtrlKeyword;
-	wxTextCtrl *m_pTextCtrlExecFile;
-	wxTextCtrl *m_pTextCtrlParameters;
-	wxTextCtrl *m_pTextCtrlStartUpPath;
-	wxTextCtrl *m_pTextCtrlNotes;
-	wxButton *m_pButtonFileDialog;
-	wxString m_strEditKeyword;
-
 public:
-	CAddKeywordDialog(wxWindow* parent, wxWindowID id, const wxString& title = wxT("wxQuickRun"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500, 275), long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, const wxString& name = wxT("Add Keyword Dialog"));
+	CAddKeywordDialog(wxWindow* parent, wxWindowID id, const wxString& title = wxT("wxQuickRun"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500, 310), long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER, const wxString& name = wxT("Add Keyword Dialog"));
 	virtual ~CAddKeywordDialog(void);
-	void SetEditMode(wxString strEditKeyword);
+	void SetEditMode(wxString);
+	void SetFileName(wxString);
+	void SetLinkName(wxString);
+	bool OnDropText(wxCoord, wxCoord, const wxString&);
 
 private:
 	void OnClose(wxCloseEvent &event);
 	void OnInitDialog(wxInitDialogEvent &event);
 	void OnOK(wxCommandEvent& event);
 	void OnButtonFileDialog(wxCommandEvent& WXUNUSED(event));
+	void OnDropFiles(wxDropFilesEvent &event);
+	void OnFileDrop(wxString);
+	void OnURLLinkDrop(wxString);
+	wxString ParseCommand(wxString);
+	wxString ParseParameters(wxString);
+	wxString ParseLink(wxString);
 	void FillDialog();
+	wxString GetDefaultBrowser(wxString);
 
 public:
 	enum 
@@ -67,13 +65,35 @@ public:
 		wxID_STATIC_TEXT_PARAMETERS,
 		wxID_STATIC_TEXT_STARTUP_PATH,
 		wxID_STATIC_TEXT_NOTES,
+		wxID_STATIC_TEXT_HOTKEY,
 		wxID_TEXTCTRL_KEYWORD,
 		wxID_TEXTCTRL_EXEC_FILE,
 		wxID_TEXTCTRL_PARAMETERS,
 		wxID_TEXTCTRL_STARTUP_PATH,
 		wxID_TEXTCTRL_NOTES,
+		wxID_TEXTCTRL_KEY_INPUT,
+		wxID_COMBOBOX_KEY_MODIFIER,
 		wxID_BUTTON_FILE_DIALOG
 	};
+
+private:
+	wxStaticText *m_pStaticTextKeyword;
+	wxStaticText *m_pStaticTextExecFile;
+	wxStaticText *m_pStaticTextParameters;
+	wxStaticText *m_pStaticTextStartUpPath;
+	wxStaticText *m_pStaticTextNotes;
+	wxTextCtrl *m_pTextCtrlKeyword;
+	wxTextCtrl *m_pTextCtrlExecFile;
+	wxTextCtrl *m_pTextCtrlParameters;
+	wxTextCtrl *m_pTextCtrlStartUpPath;
+	wxTextCtrl *m_pTextCtrlNotes;
+	wxButton *m_pButtonFileDialog;
+	wxStaticText *m_pStaticTextHotKey;
+	CKeyInputCtrl *m_pKeyInputCtrl;
+	wxComboBox *m_pComboBoxModifier;
+	wxString m_strEditKeyword;
+	wxString m_strFileName;
+	wxString m_strURLLinkName;
 
 private:
 	// Any class wishing to process wxWindows events must use this macro

@@ -441,6 +441,8 @@ void COptionsPanel::OnDownloadEvent(wxDownloadEvent &event)
 {
 	if(event.GetDownLoadStatus() == wxDownloadEvent::DOWNLOAD_COMPLETE)
 	{
+		m_pDownloadFile->Delete();
+		m_pDownloadFile = NULL;
 		wxString strVer;
 		{
 			wxFileInputStream input(wxT("latest.ver"));
@@ -460,15 +462,13 @@ void COptionsPanel::OnDownloadEvent(wxDownloadEvent &event)
 			wxMessageBox(strMessage, wxT("wxQuickRun"), wxOK|wxCENTRE|wxICON_INFORMATION, this);
 		}
 
-		m_pDownloadFile->Delete();
-		m_pDownloadFile = NULL;
 	}
 	else if(event.GetDownLoadStatus() == wxDownloadEvent::DOWNLOAD_FAIL)
 	{
-		wxString strMessage = wxString::Format(wxT("Could not connect to the server for information.\nPlease visit http://priyank.co.in/wxQuickRun/ for latest updates."));
-		wxMessageBox(strMessage, wxT("wxQuickRun"), wxOK|wxCENTRE|wxICON_ERROR, this);
 		m_pDownloadFile->Delete();
 		m_pDownloadFile = NULL;
+		wxString strMessage = wxString::Format(wxT("Could not connect to the server for information.\nPlease visit http://priyank.co.in/wxQuickRun/ for latest updates."));
+		wxMessageBox(strMessage, wxT("wxQuickRun"), wxOK|wxCENTRE|wxICON_ERROR, this);
 	}
 }
 

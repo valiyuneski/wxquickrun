@@ -243,6 +243,23 @@ void CKeysAssignDlg::OnInitDialog(wxInitDialogEvent& WXUNUSED(event))
 	m_pTextCtrlClipPaste->Disable();
 	m_pTextCtrlClipPaste->SetValue(wxT("[0-9]"));
 
+	m_pTextCtrlFocus->SetModifierComboBox(m_pComboBoxFocus);
+	m_pTextCtrlAddNote->SetModifierComboBox(m_pComboBoxAddNote);
+	//m_pTextCtrlPasteFwd->SetModifierComboBox(m_pComboBoxPasteFwd);
+	//m_pTextCtrlPasteBkwd->SetModifierComboBox(m_pComboBoxPasteBkwd);
+	m_pTextCtrlClipCopy->SetModifierComboBox(m_pComboBoxClipCopy);
+	m_pTextCtrlClipPaste->SetModifierComboBox(m_pComboBoxClipPaste);
+	m_pTextCtrlPasteInc->SetModifierComboBox(m_pComboBoxPasteInc);
+	m_pTextCtrlPasteDec->SetModifierComboBox(m_pComboBoxPasteDec);
+	m_pTextCtrlGbMenu->SetModifierComboBox(m_pComboBoxGbMenu);
+	m_pTextCtrlCountChars->SetModifierComboBox(m_pComboBoxCountChars);
+	m_pTextCtrlUpperCase->SetModifierComboBox(m_pComboBoxUpperCase);
+	m_pTextCtrlLowerCase->SetModifierComboBox(m_pComboBoxLowerCase);
+	m_pTextCtrlToogleCase->SetModifierComboBox(m_pComboBoxToogleCase);
+	m_pTextCtrlSentenceCase->SetModifierComboBox(m_pComboBoxSentenceCase);
+	m_pTextCtrlCheckSpell->SetModifierComboBox(m_pComboBoxCheckSpell);
+	m_pTextCtrlCalculation->SetModifierComboBox(m_pComboBoxCalculation);
+
 	SetAutoLayout(true);
 	Fit();
 	Layout();
@@ -319,82 +336,82 @@ void CKeysAssignDlg::InitControlFromDB(wxString strKey, int nModifier, int nVirt
 {
 	if(strKey == wxT("Focus"))
 	{
-		m_pComboBoxFocus->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxFocus->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlFocus->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("AddNote"))
 	{
-		m_pComboBoxAddNote->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxAddNote->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlAddNote->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("PasteFwd"))
 	{
-		//m_pComboBoxPasteFwd->SetValue(GetModifierAsString(nModifier));
+		//m_pComboBoxPasteFwd->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		//m_pTextCtrlPasteFwd->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("PasteBkwd"))
 	{
-		//m_pComboBoxPasteBkwd->SetValue(GetModifierAsString(nModifier));
+		//m_pComboBoxPasteBkwd->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		//m_pTextCtrlPasteBkwd->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("ClipCopy"))
 	{
 		m_pTextCtrlClipCopy->SetValue(wxT("[0-9]"));
-		m_pComboBoxClipCopy->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxClipCopy->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 	}
 	else if(strKey == wxT("ClipPaste"))
 	{
 		m_pTextCtrlClipPaste->SetValue(wxT("[0-9]"));
-		m_pComboBoxClipPaste->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxClipPaste->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 	}
 	else if(strKey == wxT("PasteInc"))
 	{
-		m_pComboBoxPasteInc->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxPasteInc->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlPasteInc->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("PasteDec"))
 	{
-		m_pComboBoxPasteDec->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxPasteDec->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlPasteDec->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("GbMenu"))
 	{
-		m_pComboBoxGbMenu->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxGbMenu->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlGbMenu->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("CountChars"))
 	{
-		m_pComboBoxCountChars->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxCountChars->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlCountChars->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("UpperCase"))
 	{
-		m_pComboBoxUpperCase->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxUpperCase->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlUpperCase->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("LowerCase"))
 	{
-		m_pComboBoxLowerCase->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxLowerCase->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlLowerCase->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("ToogleCase"))
 	{
-		m_pComboBoxToogleCase->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxToogleCase->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlToogleCase->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("SentenceCase"))
 	{
-		m_pComboBoxSentenceCase->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxSentenceCase->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlSentenceCase->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("CheckSpell"))
 	{
-		m_pComboBoxCheckSpell->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxCheckSpell->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlCheckSpell->SetKeyCode(nVirtualCode);
 	}
 	else if(strKey == wxT("Calculation"))
 	{
-		m_pComboBoxCalculation->SetValue(GetModifierAsString(nModifier));
+		m_pComboBoxCalculation->SetValue(CKeyInputCtrl::GetModifierAsString(nModifier));
 		m_pTextCtrlCalculation->SetKeyCode(nVirtualCode);
 	}
 }
@@ -424,33 +441,6 @@ int CKeysAssignDlg::GetModifier(wxString strModifier)
 	else if(strModifier == wxT("CTRL|ALT|WIN"))
 		return wxMOD_CONTROL|wxMOD_ALT|wxMOD_WIN;
 	return 0;
-}
-
-wxString CKeysAssignDlg::GetModifierAsString(int nModifier)
-{
-	if(nModifier == int(wxMOD_SHIFT))
-		return wxT("SHIFT");
-	else if(nModifier == int(wxMOD_CONTROL))
-		return wxT("CTRL");
-	else if(nModifier == int(wxMOD_ALT))
-		return wxT("ALT");
-	else if(nModifier == int(wxMOD_SHIFT|wxMOD_WIN))
-		return wxT("SHIFT|WIN");
-	else if(nModifier == int(wxMOD_CONTROL|wxMOD_WIN))
-		return wxT("CTRL|WIN");
-	else if(nModifier == int(wxMOD_ALT|wxMOD_WIN))
-		return wxT("ALT|WIN");
-	else if(nModifier == int(wxMOD_ALT|wxMOD_SHIFT))
-		return wxT("ALT|SHIFT");
-	else if(nModifier == int(wxMOD_ALT|wxMOD_CONTROL))
-		return wxT("ALT|CTRL");
-	else if(nModifier == int(wxMOD_SHIFT|wxMOD_CONTROL))
-		return wxT("SHIFT|CTRL");
-	else if(nModifier == int(wxMOD_ALT|wxMOD_SHIFT|wxMOD_CONTROL))
-		return wxT("ALT|SHIFT|CTRL");
-	else if(nModifier == int(wxMOD_CONTROL|wxMOD_ALT|wxMOD_WIN))
-		return wxT("CTRL|ALT|WIN");
-	return wxT("");
 }
 
 bool CKeysAssignDlg::CheckForDuplicateKeyBindings(void)
@@ -578,59 +568,4 @@ void CKeysAssignDlg::GetCommandHotKey(wxString strKey, int &nVirtualKey, int &nM
 		nModifier = result.GetInt(1);
 	}
 	result.Finalize();
-}
-
-void CKeysAssignDlg::OnModifierChange(wxWindowID id, int nModifier)
-{
-	switch(id)
-	{
-	case wxID_TEXTCTRL_FOCUS:
-		m_pComboBoxFocus->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_ADDNOTE:
-		m_pComboBoxAddNote->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_PASTE_FWD:
-		m_pComboBoxPasteFwd->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_PASTE_BKWD:
-		m_pComboBoxPasteBkwd->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_CLIP_COPY:
-		m_pComboBoxClipCopy->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_CLIP_PASTE:
-		m_pComboBoxClipPaste->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_PASTE_INC:
-		m_pComboBoxPasteInc->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_PASTE_DEC:
-		m_pComboBoxPasteDec->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_GB_MENU:
-		m_pComboBoxGbMenu->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_COUNT_CHARS:
-		m_pComboBoxCountChars->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_UPPERCASE:
-		m_pComboBoxUpperCase->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_LOWERCASE:
-		m_pComboBoxLowerCase->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_TOGGLE_CASE:
-		m_pComboBoxToogleCase->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_SENTENCE_CASE:
-		m_pComboBoxSentenceCase->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_SPELL_CHECK:
-		m_pComboBoxCheckSpell->SetValue(GetModifierAsString(nModifier));
-		break;
-	case wxID_TEXTCTRL_CALCULATION:
-		m_pComboBoxCalculation->SetValue(GetModifierAsString(nModifier));
-		break;
-	};
 }

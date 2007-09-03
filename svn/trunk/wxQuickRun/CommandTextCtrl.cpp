@@ -32,7 +32,6 @@
 #include <wx/filename.h>
 #include <wx/clipbrd.h>
 #include <wx/dir.h>
-#include <wx/filename.h>
 
 #include "wxQuickRun.h"
 #include "CommandTextCtrl.h"

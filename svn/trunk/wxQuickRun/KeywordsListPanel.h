@@ -36,6 +36,7 @@ class CKeywordsListPanel : public wxPanel
 public:
 	CKeywordsListPanel(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL, const wxString& name = wxT("Keywords List Panel"));
 	virtual ~CKeywordsListPanel(void);
+	bool OnDropText(wxCoord x, wxCoord y, const wxString& data);
 
 private:
 	void OnClose(wxCloseEvent &event);
@@ -44,6 +45,7 @@ private:
 	void OnDeleteKeyword(wxCommandEvent &event);
 	void OnImportKeyword(wxCommandEvent &event);
 	void OnExportKeyword(wxCommandEvent &event);
+	void OnDropFiles(wxDropFilesEvent &event);
 	void CreateGUIControls();
 	void FillKeywordsList();
 
