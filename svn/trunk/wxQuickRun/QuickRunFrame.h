@@ -53,26 +53,8 @@ private:
 	void OnEnterWindow(wxMouseEvent &event);
 	void OnLeaveWindow(wxMouseEvent &event);
 	void OnFocusHotKey(wxKeyEvent &event);
-	void OnTextCopyHotKey0(wxKeyEvent &event);
-	void OnTextCopyHotKey1(wxKeyEvent &event);
-	void OnTextCopyHotKey2(wxKeyEvent &event);
-	void OnTextCopyHotKey3(wxKeyEvent &event);
-	void OnTextCopyHotKey4(wxKeyEvent &event);
-	void OnTextCopyHotKey5(wxKeyEvent &event);
-	void OnTextCopyHotKey6(wxKeyEvent &event);
-	void OnTextCopyHotKey7(wxKeyEvent &event);
-	void OnTextCopyHotKey8(wxKeyEvent &event);
-	void OnTextCopyHotKey9(wxKeyEvent &event);
-	void OnTextPasteHotKey0(wxKeyEvent &event);
-	void OnTextPasteHotKey1(wxKeyEvent &event);
-	void OnTextPasteHotKey2(wxKeyEvent &event);
-	void OnTextPasteHotKey3(wxKeyEvent &event);
-	void OnTextPasteHotKey4(wxKeyEvent &event);
-	void OnTextPasteHotKey5(wxKeyEvent &event);
-	void OnTextPasteHotKey6(wxKeyEvent &event);
-	void OnTextPasteHotKey7(wxKeyEvent &event);
-	void OnTextPasteHotKey8(wxKeyEvent &event);
-	void OnTextPasteHotKey9(wxKeyEvent &event);
+	void OnTextCopyHotKey(wxKeyEvent &event);
+	void OnTextPasteHotKey(wxKeyEvent &event);
 	void OnAddNoteHotKey(wxKeyEvent &event);
 	void OnIncrementPasteHotKey(wxKeyEvent &event);
 	void OnDecrementPasteHotKey(wxKeyEvent &event);
@@ -87,6 +69,7 @@ private:
 	void OnPasteMenu(wxCommandEvent &event);
 	void OnMenuKeywords(wxCommandEvent &event);
 	void OnMenuSearchEngine(wxCommandEvent &event);
+	void OnCommandHotkey(wxKeyEvent &event);
 	void OnCountCharsHotKey(wxKeyEvent &event);
 	void OnUpperCaseHotKey(wxKeyEvent &event);
 	void OnLowerCaseHotKey(wxKeyEvent &event);
@@ -179,7 +162,8 @@ public:
 		wxID_MENU_POPUP_COPY,
 		wxID_MENU_POPUP_PASTE,
 		wxID_TIMER_REMINDER,
-		wxID_MENU_POPUP_SEARCH = wxID_HIGHEST + 3000
+		wxID_MENU_POPUP_SEARCH = wxID_HIGHEST + 3000,
+		wxID_HOTKEY_COMMANDS = wxID_HIGHEST + 3050
 	};
 private:
 	CCommandTextCtrl *m_pTextCtrl;
@@ -191,6 +175,7 @@ private:
 
 public:
 	static const int MAX_SEARCH_ENGINES = 25;
+	static const int MAX_COMMAND_HOTKEYS = 25;
 
 private:
 	// Any class wishing to process wxWindows events must use this macro

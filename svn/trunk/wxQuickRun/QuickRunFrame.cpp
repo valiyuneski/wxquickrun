@@ -44,6 +44,8 @@
 #define new WXDEBUG_NEW
 #endif
 
+#define EVT_HOTKEY_RANGE(id1, id2, func)  wx__DECLARE_EVT2(wxEVT_HOTKEY, id1, id2, wxCharEventHandler(func))
+
 BEGIN_EVENT_TABLE(CQuickRunFrame, wxFrame)
 	EVT_CLOSE(CQuickRunFrame::OnClose)
 	EVT_PAINT(CQuickRunFrame::OnPaint)
@@ -51,27 +53,10 @@ BEGIN_EVENT_TABLE(CQuickRunFrame, wxFrame)
 	EVT_ENTER_WINDOW(CQuickRunFrame::OnEnterWindow)
 	EVT_LEAVE_WINDOW(CQuickRunFrame::OnLeaveWindow)
 	EVT_TIMER(wxID_TIMER_REMINDER, CQuickRunFrame::OnReminderTimer)
+	EVT_HOTKEY_RANGE(wxID_HOTKEY_COMMANDS, wxID_HOTKEY_COMMANDS+MAX_COMMAND_HOTKEYS, CQuickRunFrame::OnCommandHotkey)
 	EVT_HOTKEY(wxID_HOTKEY_BRING_FOCUS, CQuickRunFrame::OnFocusHotKey)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_0, CQuickRunFrame::OnTextCopyHotKey0)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_1, CQuickRunFrame::OnTextCopyHotKey1)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_2, CQuickRunFrame::OnTextCopyHotKey2)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_3, CQuickRunFrame::OnTextCopyHotKey3)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_4, CQuickRunFrame::OnTextCopyHotKey4)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_5, CQuickRunFrame::OnTextCopyHotKey5)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_6, CQuickRunFrame::OnTextCopyHotKey6)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_7, CQuickRunFrame::OnTextCopyHotKey7)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_8, CQuickRunFrame::OnTextCopyHotKey8)
-	EVT_HOTKEY(wxID_HOTKEY_COPY_9, CQuickRunFrame::OnTextCopyHotKey9)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_0, CQuickRunFrame::OnTextPasteHotKey0)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_1, CQuickRunFrame::OnTextPasteHotKey1)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_2, CQuickRunFrame::OnTextPasteHotKey2)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_3, CQuickRunFrame::OnTextPasteHotKey3)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_4, CQuickRunFrame::OnTextPasteHotKey4)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_5, CQuickRunFrame::OnTextPasteHotKey5)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_6, CQuickRunFrame::OnTextPasteHotKey6)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_7, CQuickRunFrame::OnTextPasteHotKey7)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_8, CQuickRunFrame::OnTextPasteHotKey8)
-	EVT_HOTKEY(wxID_HOTKEY_PASTE_9, CQuickRunFrame::OnTextPasteHotKey9)
+	EVT_HOTKEY_RANGE(wxID_HOTKEY_COPY_0, wxID_HOTKEY_COPY_9, CQuickRunFrame::OnTextCopyHotKey)
+	EVT_HOTKEY_RANGE(wxID_HOTKEY_PASTE_0, wxID_HOTKEY_PASTE_9, CQuickRunFrame::OnTextPasteHotKey)
 	EVT_HOTKEY(wxID_HOTKEY_ADD_NOTE, CQuickRunFrame::OnAddNoteHotKey)
 	EVT_HOTKEY(wxID_HOTKEY_INC_PASTE, CQuickRunFrame::OnIncrementPasteHotKey)
 	EVT_HOTKEY(wxID_HOTKEY_DEC_PASTE, CQuickRunFrame::OnDecrementPasteHotKey)
@@ -411,63 +396,10 @@ void CQuickRunFrame::CopyTextToClipboard(int nIndex)
 	CClipBoardManager::GetInstance()->SetStringToVirtualClipBoard(nIndex, CClipBoardManager::ReadFromGlobalClipboard());
 }
 
-void CQuickRunFrame::OnTextCopyHotKey0(wxKeyEvent &event)
+void CQuickRunFrame::OnTextCopyHotKey(wxKeyEvent &event)
 {
-	CopyTextToClipboard(0);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey1(wxKeyEvent &event)
-{
-	CopyTextToClipboard(1);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey2(wxKeyEvent &event)
-{
-	CopyTextToClipboard(2);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey3(wxKeyEvent &event)
-{
-	CopyTextToClipboard(3);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey4(wxKeyEvent &event)
-{
-	CopyTextToClipboard(4);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey5(wxKeyEvent &event)
-{
-	CopyTextToClipboard(5);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey6(wxKeyEvent &event)
-{
-	CopyTextToClipboard(6);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey7(wxKeyEvent &event)
-{
-	CopyTextToClipboard(7);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey8(wxKeyEvent &event)
-{
-	CopyTextToClipboard(8);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextCopyHotKey9(wxKeyEvent &event)
-{
-	CopyTextToClipboard(9);
+	int nID = event.GetId() - wxID_HOTKEY_COPY_0;
+	CopyTextToClipboard(nID);
 	event.Skip(false);
 }
 
@@ -477,63 +409,10 @@ void CQuickRunFrame::PasteTextToApp(int nIndex)
 	PasteTextFromClipboardToApp();
 }
 
-void CQuickRunFrame::OnTextPasteHotKey0(wxKeyEvent &event)
+void CQuickRunFrame::OnTextPasteHotKey(wxKeyEvent &event)
 {
-	PasteTextToApp(0);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey1(wxKeyEvent &event)
-{
-	PasteTextToApp(1);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey2(wxKeyEvent &event)
-{
-	PasteTextToApp(2);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey3(wxKeyEvent &event)
-{
-	PasteTextToApp(3);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey4(wxKeyEvent &event)
-{
-	PasteTextToApp(4);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey5(wxKeyEvent &event)
-{
-	PasteTextToApp(5);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey6(wxKeyEvent &event)
-{
-	PasteTextToApp(6);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey7(wxKeyEvent &event)
-{
-	PasteTextToApp(7);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey8(wxKeyEvent &event)
-{
-	PasteTextToApp(8);
-	event.Skip(false);
-}
-
-void CQuickRunFrame::OnTextPasteHotKey9(wxKeyEvent &event)
-{
-	PasteTextToApp(9);
+	int nID = event.GetId() - wxID_HOTKEY_PASTE_0;
+	PasteTextToApp(nID);
 	event.Skip(false);
 }
 
@@ -722,10 +601,6 @@ void CQuickRunFrame::OnGlobalMenuHotKey(wxKeyEvent& WXUNUSED(event))
 	pContextMenu->Append(wxID_MENU_ADD_TASK, wxT("Add &Task"));
 	wxMouseState mouse = wxGetMouseState();
 	PopupMenu(pContextMenu, mouse.GetX()-GetPosition().x-10, mouse.GetY()-GetPosition().y-10);
-	delete pCopyMenu;
-	delete pPasteMenu;
-	delete pKeywords;
-	delete pSearch;
 	delete pContextMenu;
 }
 
@@ -1098,4 +973,9 @@ wxString CQuickRunFrame::ConvertHotkeyID2String(int nKeyID)
 	else if(nKeyID == wxID_HOTKEY_CALCULATE)
 		return wxT("Calculation");
 	return wxEmptyString;
+}
+
+void CQuickRunFrame::OnCommandHotkey(wxKeyEvent &event)
+{
+	event.Skip(false);
 }
