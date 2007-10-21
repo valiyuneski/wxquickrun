@@ -61,9 +61,9 @@ void* wxDownloadFile::Entry()
 	event.SetDownLoadStatus(wxDownloadEvent::DOWNLOAD_RUNNING);
 	
 	wxURL Url(m_strURL);
-	((wxProtocol &)Url.GetProtocol()).SetTimeout(100);
 	if (Url.GetError() == wxURL_NOERR)
 	{
+		((wxProtocol &)Url.GetProtocol()).SetTimeout(100);
 		wxInputStream *pIn_Stream = NULL;
 #ifdef __WXMSW__
 		wxRegKey *pRegKey = new wxRegKey(wxT("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"));

@@ -227,7 +227,7 @@ void CKeywordsListPanel::OnDropFiles(wxDropFilesEvent &event)
 	}
 }
 
-bool CKeywordsListPanel::OnDropText(wxCoord x, wxCoord y, const wxString& data)
+bool CKeywordsListPanel::OnDropText(wxCoord, wxCoord, const wxString& data)
 {
 	wxFileName fileName(data);
 	wxString strLink = data.Lower();

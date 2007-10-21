@@ -56,7 +56,6 @@ bool CCommandsHotKeyTable::AddRecord(int nCommandID, int nKeyCode, int nModifier
 		m_DBConnection->ExecuteUpdate(sqlCmd);
 		return true;
 	}
-	return false;
 }
 
 bool CCommandsHotKeyTable::DeleteRecord(int nCommandID)

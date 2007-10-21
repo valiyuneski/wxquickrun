@@ -863,6 +863,8 @@ bool CCommandTextCtrl::GetNewValidInputValues()
 			}
 			result.Finalize();
 			m_bIsFolder = false;
+			if(strInput.IsEmpty())
+				return false;
 			return true;
 		}
 	}

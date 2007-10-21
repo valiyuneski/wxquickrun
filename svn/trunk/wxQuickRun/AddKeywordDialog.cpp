@@ -396,7 +396,7 @@ void CAddKeywordDialog::SetLinkName(wxString strURLLink)
 	m_strURLLinkName = strURLLink;
 }
 
-bool CAddKeywordDialog::OnDropText(wxCoord x, wxCoord y, const wxString& data)
+bool CAddKeywordDialog::OnDropText(wxCoord, wxCoord, const wxString& data)
 {
 	wxFileName fileName(data);
 	wxString strLink = data.Lower();
