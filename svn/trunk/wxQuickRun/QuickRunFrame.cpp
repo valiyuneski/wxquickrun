@@ -38,6 +38,7 @@
 #include "CommandTextCtrl.h"
 #include "SpellCheckDlg.h"
 #include "KeysAssignDlg.h"
+#include "CommandsHotKeyTable.h"
 #include "muParser.h"
 
 #ifdef __WXDEBUG__
@@ -215,6 +216,7 @@ void CQuickRunFrame::InstallHotKeys()
 		}
 	}
 	result.Finalize();
+	InstallCommandsHotkeys();
 }
 
 void CQuickRunFrame::DeInstallHotKeys()
@@ -977,5 +979,18 @@ wxString CQuickRunFrame::ConvertHotkeyID2String(int nKeyID)
 
 void CQuickRunFrame::OnCommandHotkey(wxKeyEvent &event)
 {
+	int ID = event.GetId();
+	int nKeyCode = event.GetKeyCode();
+	int nKeyModifier = event.GetModifiers();
 	event.Skip(false);
+}
+
+void CQuickRunFrame::InstallCommandsHotkeys()
+{
+	vector<HotKey> hotkeys = CCommandsHotKeyTable().GetAllHotkeys();
+	for(vector<HotKey>::iterator iter = hotkeys.begin(); iter != hotkeys.end(); ++iter)
+	{
+		HotKey hotkey = *iter;
+		//RegisterHotKeyCommand();
+	}
 }

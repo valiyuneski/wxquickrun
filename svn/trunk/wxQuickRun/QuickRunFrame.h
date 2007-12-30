@@ -92,6 +92,7 @@ private:
 	wxString ConvertHotkeyID2String(int nKeyID);
 	void CopyTextToClipboard(int nIndex);
 	void PasteTextToApp(int nIndex);
+	void InstallCommandsHotkeys();
 
 #ifdef __WXMSW__
 private:

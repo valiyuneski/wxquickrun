@@ -32,6 +32,8 @@
 #include <wx/dir.h>
 #include "AddKeywordDialog.h"
 #include "CommandTextCtrl.h"
+#include "CommandsHotKeyTable.h"
+#include "KeysAssignDlg.h"
 #include "TextDropHandler.h"
 #include "wxQuickRun.h"
 
@@ -191,6 +193,15 @@ void CAddKeywordDialog::OnOK(wxCommandEvent& event)
 		m_pTextCtrlKeyword->SetFocus();
 		return;
 	}
+	if(!m_pKeyInputCtrl->GetValue().IsEmpty())
+	{
+		if(CCommandsHotKeyTable().GetCommand(m_pKeyInputCtrl->GetKeyCode(), CKeysAssignDlg::GetModifier(m_pComboBoxModifier->GetValue())) != 0)
+		{
+			wxMessageBox(wxT("This hotkey is already assigned to some other command. Please choose a different hotkey."), wxT("wxQuickRun"), wxOK | wxCENTRE | wxICON_ERROR, this);
+			m_pTextCtrlKeyword->SetFocus();
+			return;
+		}
+	}
 	if (strExecFile == wxEmptyString || !wxFileName::FileExists(strExecFile))
 	{
 		wxString strFileName = strExecFile;
@@ -240,6 +251,14 @@ void CAddKeywordDialog::OnOK(wxCommandEvent& event)
 	else
 		sqlCmd = wxString::Format(wxT("Insert INTO Commands('ID', 'keyword', 'executableFile', 'params', 'startUpPath', 'notes') VALUES(%d, '%s', '%s', '%s', '%s', '%s')"), nIDOld, strKeyword.MakeLower(), strExecFile, strParameters, strStartUpPath, strNotes);
 	dbConn->ExecuteUpdate(sqlCmd);
+
+	nIDOld = dbConn->ExecuteScalar(wxString::Format(wxT("Select ID from Commands WHERE 'keyword' = '%s'"), strKeyword.MakeLower()));
+	CCommandsHotKeyTable().DeleteRecord(nIDOld);
+	if(!m_pKeyInputCtrl->GetValue().IsEmpty())
+	{
+		CCommandsHotKeyTable().AddRecord(nIDOld, m_pKeyInputCtrl->GetKeyCode(), CKeysAssignDlg::GetModifier(m_pComboBoxModifier->GetValue()));
+	}
+
 	if(m_strEditKeyword == wxEmptyString)
 	{
 		CCommandTextCtrl* pTextCtrl = static_cast<CCommandTextCtrl *>(CCommandTextCtrl::GetInstance());
